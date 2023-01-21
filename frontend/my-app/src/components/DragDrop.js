@@ -23,24 +23,32 @@ export default function DragDrop() {
     }
   };
 
-  const handleFile = function (e) {
-    const file = e.target.files[0];
-    const url = URL.createObjectURL(file);
+  const handleFile = function (files) {
+    // alert("Number of files: " + files.length);
+
+    const url = URL.createObjectURL(files[0]);
     setSource(url);
+    // var video = document.createElement("video");
+    // video.controls = true;
+    // video.src = window.URL.createObjectURL(file);
+    // document.body.appendChild(video);
   }
 
   // triggers when file is dropped
   const handleDrop = function (e) {
+    console.log('handledrop')
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e);
+      console.log(e.dataTransfer.files.length)
+      handleFile(e.dataTransfer.files);
     }
   };
 
   // triggers when file is selected with click
   const handleChange = function (e) {
+    console.log('handlechange')
     e.preventDefault();
     if (e.target.files && e.target.files[0]) {
       handleFile(e);

@@ -35,11 +35,24 @@
 
 
 #form-file-upload {
-  height: 16rem;
-  width: 28rem;
+  /* height: 16rem;
+  width: 28rem; */
   max-width: 100%;
   text-align: center;
   position: relative;
+  position: fixed; /* or absolute */
+  top: 20%;
+  left: 35%;
+  height: 40%;
+  width: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-width: 2px;
+  border-radius: 1rem;
+  border-style: dashed;
+  border-color: #cbd5e1;
+  background-color: #f8fafc;
 }
 
 #input-file-upload {
@@ -77,7 +90,7 @@
 
 .upload-button:hover {
   text-decoration-line: underline;
-  color:cadetblue;
+  /* color:cadetblue; */
 }
 
 #drag-file-element {
@@ -93,7 +106,7 @@
 
 .CheckBoxes {
   display: flex;
-  position: fixed;
+  /* position: fixed; */
   top: 50%;
   right:50%
 }

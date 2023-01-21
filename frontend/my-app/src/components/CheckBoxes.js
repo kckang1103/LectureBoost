@@ -27,7 +27,7 @@ export default function CheckBoxes() {
 
   return (
     <>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex', width: 1000 }}>
         <FormControl
           required
           component="fieldset"
