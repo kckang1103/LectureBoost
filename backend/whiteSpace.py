@@ -241,39 +241,21 @@ def subclipVideo(inFile, outFile, timestamps):
 
 
 def removeWhiteSpace(folderName, videoName):
-    # Print starting bytes
-    # hexGroups, hexOffsets = openFile("transcribedSpeech.wav")
-    # smlGrp = [hexGroups[0], hexGroups[1], hexGroups[2], hexGroups[3],hexGroups[4],hexGroups[5], hexGroups[6]]
-    # smlOffsets = [hexOffsets[0], hexOffsets[1], hexOffsets[2], hexOffsets[3], hexOffsets[4], hexOffsets[5], hexOffsets[6]]
-    # print(createHexViewer(smlGrp, smlOffsets))
-
-    # Retrieve WAV set of samples
+    # Retrieve .wav set of samples
     audioName = videoName[:-4] + "_audio.wav"
     audioClip = AudioFileClip(folderName + videoName)
     audioClip.write_audiofile(folderName + audioName)
     wavData = getWavData(folderName + audioName)
     byteNumbers, sampleNumbers, binSamples, decSamples = getWavSamples(wavData)
 
-    # Convert WAV data (decimal audio values -> relative decibels) (byte numbers -> seconds)
+    # Convert .wav data (decimal audio values -> relative decibels) (byte numbers -> seconds)
     relativeDecibels = decimalAudioValuesToRelativeDecibels(samples=decSamples, maxVolume=max(decSamples))
     timestamps = byteNumbersToSeconds(byteNumbers=byteNumbers)
-    print(len(timestamps))
-    # Graph the result
-    # createGraph(x=sampleNumbers[3400000:3500000], y=relativeDecibels[3400000:3500000], xaxis="byte", yaxis="value(-100-100)", title="raw-data-graph")
-    # createGraph(x=timestamps[:10000], y=relativeDecibels[:10000], xaxis="seconds", yaxis="value(-100-100)", title="Relative Decibels vs Time")
 
-    # Get timestamps with dB values less than
-    lowTimestamps = getLowDecibelTimestamps(timestamps=timestamps, decibels=relativeDecibels)
-    #print(lowTimestamps)
-    #print(len(lowTimestamps))
-
-    subclipRange = cutoutRangeToSubclipRange(lowTimestamps)
-    #print(subclipRange)
-    #print(len(subclipRange))
-
-    # cutoutVideo(inFile="2_min.mp4", outFile="2_min_mod.mp4", timestamps=lowTimestamps)
-    # ffmpegSubclipVideo(inFile="2_min.mp4", outFolder="videos/", timestamps=subclipRange)
+    # Get timestamps to use in cutting
+    cutoutRange = getLowDecibelTimestamps(timestamps=timestamps, decibels=relativeDecibels)  # timestamp ranges less than threshold
+    subclipRange = cutoutRangeToSubclipRange(cutoutRange)  # timestamp ranges greater than threshold
     subclipVideo(inFile=folderName + videoName, outFile=folderName + videoName[:-4] + "_cut.mp4", timestamps=subclipRange)
 
 if __name__ == "__main__":
-    removeWhiteSpace(folderName="uploads/", videoName="2_min.mp4")
+    removeWhiteSpace(folderName="uploads/", videoName="10_sec.mp4")
