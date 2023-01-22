@@ -4,6 +4,14 @@ from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
 
+import boto3, botocore
+
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
+)
+
 UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = {'mp4', 'py', 'txt'}
 
@@ -12,6 +20,28 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.add_url_rule(
     "/uploads/<name>", endpoint="download_file", build_only=True
 )
+
+
+def upload_file_to_s3(file, acl="public-read"):
+    filename = secure_filename(file.filename)
+    try:
+        s3.upload_fileobj(
+            file,
+            os.getenv("AWS_BUCKET_NAME"),
+            file.filename,
+            ExtraArgs={
+                "ACL": acl,
+                "ContentType": file.content_type
+            }
+        )
+
+    except Exception as e:
+        # This is a catch all exception, edit this part to fit your needs.
+        print("Something Happened: ", e)
+        return e
+
+    # after upload file to s3 bucket, return filename of the uploaded file
+    return file.filename
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -45,6 +75,17 @@ def upload_file():
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
+
+            print("got file: ", file.filename)
+            print("file: ", file)
+
+            # TODO delete later; testing upload to s3 from here
+            output = upload_file_to_s3(file)
+            if output:
+                print("success uploading to s3")
+            else:
+                print("upload failed")
+
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return redirect(url_for('download_file', name=filename))
