@@ -112,7 +112,8 @@
 import os
 
 import boto3
-from flask import Flask, flash, request, redirect, jsonify
+from boto3 import Session
+from flask import Flask, flash, request, redirect, url_for, jsonify
 from flask import send_from_directory
 from werkzeug.utils import secure_filename
 
@@ -143,7 +144,7 @@ def upload_pdf_to_s3(filename):
         aws_secret_access_key='***REMOVED***')
     resource.Object("lecture-boost", filename).upload_file(filename)
     location = s3.get_bucket_location(Bucket=os.environ.get("AWS_BUCKET_NAME"))['LocationConstraint']
-    url = "https://s3-%s.amazonaws.com/%s/%s" % (location, os.environ.get("AWS_BUCKET_NAME"), filename)
+    url = "https://%s.s3.%s.amazonaws.com/%s" % (os.environ.get("AWS_BUCKET_NAME"), location, filename)
 
     return url
 
@@ -163,7 +164,8 @@ def upload_file_to_s3(file, filename, acl="public-read"):
     # after upload file to s3 bucket, return filename of the uploaded file
     location = s3.get_bucket_location(Bucket=os.environ.get("AWS_BUCKET_NAME"))['LocationConstraint']
     print(location)
-    url = "https://s3-%s.amazonaws.com/%s/%s" % (location, os.environ.get("AWS_BUCKET_NAME"), filename)
+    # url = "https://s3-%s.amazonaws.com/%s/%s" % (location, os.environ.get("AWS_BUCKET_NAME"), filename)
+    url = "https://%s.s3.%s.amazonaws.com/%s" % (os.environ.get("AWS_BUCKET_NAME"), location, filename)
     print(url)
 
     return url
@@ -183,25 +185,42 @@ def return_shravan():
 def download_file(name):
     return send_from_directory(app.config["UPLOAD_FOLDER"], name)
 
+#
+# <<<<<<< HEAD
+# @app.route('/file/<whitespace>/<whitespace_val>/<subtitles>/<transcript>/<slideshow>', methods=['GET', 'POST'])
+# def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
+#     response = {
+#         "transcript": "",
+#         "video": "",
+#         "textFromSlides": "",
+#         "slides": ""
+#     }
+#     if request.method == 'POST':
+#         # check if the post request has the file part
+#         print("============================")
+# =======
+#     return '<!doctype html>'
+
 
 @app.route('/file/<whitespace>/<whitespace_val>/<subtitles>/<transcript>/<slideshow>', methods=['GET', 'POST'])
 def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
+
     response = {
         "transcript": "",
         "video": "",
         "textFromSlides": "",
         "slides": ""
     }
+
     if request.method == 'POST':
         # check if the post request has the file part
-        print("============================")
+
         print(whitespace_val)
         if 'file' not in request.files:
             flash('No file part')
             return redirect(request.url)
         file = request.files['file']
 
-        print("file content_length", file.content_length)
         # If the user does not select a file, the browser submits an
         # empty file without a filename.
         if file.filename == '':
@@ -257,6 +276,13 @@ def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
                 no_white_space_filename = "uploads/" + file.filename
                 if subtitles == "true":
                     add_subtitles(no_white_space_filename)
+                    file_to_upload = open(no_white_space_filename, "r")
+                    response_from_s3 = upload_file_to_s3(file_to_upload, no_white_space_filename)
+                    response["video"] = response_from_s3
+                    if response_from_s3:
+                        print("success uploading to s3", response_from_s3)
+                    else:
+                        print("upload failed")
                 if transcript == "true":
                     transcribe(no_white_space_filename)
                     transcription_to_upload = open("uploads/transcription.txt", "rb")
@@ -271,7 +297,7 @@ def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
                     slides_to_upload = open("uploads/slides.pdf", "rb")
                     text_from_slides_to_upload = open("uploads/textFromSlides.txt", "rb")
                     response_from_s3 = upload_file_to_s3(slides_to_upload, "uploads/slides.pdf")
-                    response["slides"] = upload_pdf_to_s3("uploads/slides.pdf")
+                    response["slides"] = str(upload_pdf_to_s3("uploads/slides.pdf"))
                     if response_from_s3:
                         print("success uploading slides to s3", response_from_s3)
                     else:
@@ -283,16 +309,13 @@ def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
                     else:
                         print("text from slide upload failed")
 
-                file_to_upload = open(no_white_space_filename, "r")
-                response_from_s3 = upload_file_to_s3(file_to_upload, no_white_space_filename)
-                response["video"] = response_from_s3
-                if response_from_s3:
-                    print("success uploading to s3", response_from_s3)
-                else:
-                    print("upload failed")
 
+
+    print("response: \n", response)
     final_response = jsonify(response)
     final_response.headers.add('Access-Control-Allow-Origin', '*')
+    print("final response: \n", final_response)
+
     return final_response
     # return '''
     # <!doctype html>
@@ -349,6 +372,7 @@ def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
 #       <input type=submit value=Upload>
 #     </form>
 #     '''
+
 
 if __name__ == '__main__':
     print('running')

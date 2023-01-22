@@ -174,16 +174,18 @@ def getLowDecibelTimestamps(timestamps, decibels):
     return lowRanges
 
 
-def cutoutRangeToSubclipRange(cutoutRange):
+def cutoutRangeToSubclipRange(cutoutRange, finalTimestamp):
     subclipRange = []
     start = 0
-    runningSum = 0
     for range in cutoutRange:
         end = range[0]
         deltax = end - start
         if deltax != 0:
             subclipRange.append((start, end))
         start = range[1]
+
+    if finalTimestamp - start != 0:
+        subclipRange.append((start, finalTimestamp))
 
     return subclipRange
 
@@ -254,8 +256,8 @@ def removeWhiteSpace(folderName, videoName):
 
     # Get timestamps to use in cutting
     cutoutRange = getLowDecibelTimestamps(timestamps=timestamps, decibels=relativeDecibels)  # timestamp ranges less than threshold
-    subclipRange = cutoutRangeToSubclipRange(cutoutRange)  # timestamp ranges greater than threshold
+    subclipRange = cutoutRangeToSubclipRange(cutoutRange, timestamps[-1])  # timestamp ranges greater than threshold
     subclipVideo(inFile=folderName + videoName, outFile=folderName + videoName[:-4] + "_cut.mp4", timestamps=subclipRange)
 
 if __name__ == "__main__":
-    removeWhiteSpace(folderName="uploads/", videoName="10_sec.mp4")
+    removeWhiteSpace(folderName="uploads/", videoName="shortShortVideo.mp4")

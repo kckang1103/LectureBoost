@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate, navigation } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormLabel from '@mui/material/FormLabel';
@@ -9,6 +10,8 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Slider from '@mui/material/Slider';
 import Checkbox from '@mui/material/Checkbox';
 import axios from "axios"
+import { LinearProgress } from '@mui/material';
+
 
 export default function CheckBoxes(props) {
   const [state, setState] = React.useState({
@@ -18,6 +21,15 @@ export default function CheckBoxes(props) {
     transcribe: false,
     slides: false,
   });
+  const [linkState, setLinkState] = React.useState({
+    video_link: '',
+    slides_link: '',
+    transcript_link: '',
+  })
+
+  const [loading, setLoading] = React.useState(false)
+  const navigate = useNavigate();
+
 
   const handleChange = (event) => {
     setState({
@@ -26,20 +38,45 @@ export default function CheckBoxes(props) {
     });
   };
   
-  const submit = (event) => {
+  async function submit() {
     let formData = new FormData();
     formData.append("file", props.file);
-    // TODO: change this link later: origional "http://127.0.0.1:8001/file"
-    // http://ec2-3-19-73-9.us-east-2.compute.amazonaws.com:8080/file
-    axios.post(`http://127.0.0.1:8080/file/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
+    setLoading(true)
+    
+    try {
+      const {data} = await axios.post(`http://127.0.0.1:8080/file/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        }
+      });
+      
+      console.log(data.slides);
+      console.log(data.transcript);
+      console.log(data.video);
+     
+      setLinkState({
+        video_link: data.video,
+        slides_link: data.slides,
+        transcript_link: data.transcript,
+      })
+    } catch (err) {
+      console.error(err);
+    }
+    
+    setLoading(false)
+
+    navigate("/Display", {
+      state: {
+        whitespace: whitespace,
+        whitespace_val: whitespace_val,
+        transcribe: transcribe,
+        slides: slides,
+        subtitles: subtitles,
+        video_link: linkState.video_link,
+        slides_link: linkState.slides_link,
+        transcript_link: linkState.transcript_link,
       }
     });
-    //TODO: change this link later: original 
-    // axios.post(`http://127.0.0.1:8080/methods/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}`)
-    // axios.post(`http://ec2-3-19-73-9.us-east-2.compute.amazonaws.com:8080/methods/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}`)
-
   };
 
   const handleSlider = (event, value) => {
@@ -50,7 +87,7 @@ export default function CheckBoxes(props) {
 
   return (
     <>
-      <Box sx={{ display: 'flex', width: 1000 }}>
+      {!loading && <><Box sx={{ display: 'flex', width: 1000 }}>
         <FormControl
           required
           component="fieldset"
@@ -97,7 +134,8 @@ export default function CheckBoxes(props) {
           <FormHelperText>Choose at least 1</FormHelperText>
         </FormControl>
       </Box>
-      <Button variant="contained" onClick={submit}>Submit</Button>
+      <Button variant="contained" onClick={submit}>Submit</Button></>}
+      {loading && <LinearProgress />}
     </>
   );
 }
