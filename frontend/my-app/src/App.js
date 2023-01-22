@@ -11,7 +11,7 @@ import "./index.css";
 function Home() {
   return (
     <div className="App">
-      <h1>Upload Video</h1>
+      <center><img src="https://lecture-boost.s3.us-east-2.amazonaws.com/Screenshot+2023-01-22+at+4.11.30+AM.png" alt="what image shows" height="100%" width="400" /></center>
       <DragDrop />
     </div>
   );
