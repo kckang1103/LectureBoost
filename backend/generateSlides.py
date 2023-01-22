@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 
 def generate_slides(video_file):
     #video_file = '../Chen.mp4'
-    text_from_slides_file = 'textFromSlides.txt'
+    text_from_slides_file = './uploads/textFromSlides.txt'
     video_capture = cv2.VideoCapture(video_file)
 
     count = 0
@@ -136,7 +136,7 @@ def generate_slides(video_file):
         for id in slides
     ]
 
-    pdf_path = "slides.pdf"
+    pdf_path = "uploads/slides.pdf"
     images[0].save(
         pdf_path, "PDF", resolution=100.0, save_all=True, append_images=images[1:]
     )

@@ -11,8 +11,7 @@ os.environ["IMAGEIO_FFMPEG_EXE"] = "/opt/homebrew/Cellar/ffmpeg/5.1.2_3/bin/ffmp
 
 def add_subtitles(video_file):
 
-    #video_file = "chenShort.mp4"
-    result_video_file = "subtitles.mp4"
+    result_video_file = video_file
     transcribed_audio_file = "transcribed_speech.wav"
 
     # loading video file clip

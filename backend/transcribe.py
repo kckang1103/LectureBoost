@@ -5,8 +5,8 @@ from moviepy.editor import *
 def transcribe(video_file):
     # file names
     #video_file = "chenShort.mp4"
-    transcription_file = "transcription.txt"
-    transcribed_audio_file = "transcribed_speech.wav"
+    transcription_file = "./uploads/transcription.txt"
+    transcribed_audio_file = "./uploads/transcribed_speech.wav"
 
     # loading video file clip
     video_clip = VideoFileClip(video_file)
