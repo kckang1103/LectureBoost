@@ -1,6 +1,6 @@
 
 import os
-from flask import Flask, flash, request, redirect, url_for
+from flask import Flask, flash, request, redirect, url_for, jsonify
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
 
@@ -22,23 +22,25 @@ def allowed_file(filename):
 def download_file(name):
     return send_from_directory(app.config["UPLOAD_FOLDER"], name)
 
-@app.route('/methods/<whitespace>/<whitespace_val>/<subtitles>/<transcript>/<slideshow>', methods=['POST'])
-def methods(whitespace, whitespace_val, subtitles, transcript, slideshow):
-    if request.method == 'POST':
-        print(whitespace_val)
+# @app.route('/methods/<whitespace>/<whitespace_val>/<subtitles>/<transcript>/<slideshow>', methods=['POST'])
+# def methods(whitespace, whitespace_val, subtitles, transcript, slideshow):
+#     if request.method == 'POST':
+#         print(whitespace_val)
         
-    return '<!doctype html>'
+#     return '<!doctype html>'
 
 
-@app.route('/file', methods=['GET', 'POST'])
-def upload_file():
+@app.route('/file/<whitespace>/<whitespace_val>/<subtitles>/<transcript>/<slideshow>', methods=['GET', 'POST'])
+def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
     if request.method == 'POST':
         # check if the post request has the file part
+        print(whitespace_val)
         if 'file' not in request.files:
             flash('No file part')
             return redirect(request.url)
         file = request.files['file']
-        print(file.content_type)
+
+        print(file.content_length)
         # If the user does not select a file, the browser submits an
         # empty file without a filename.
         if file.filename == '':
@@ -47,7 +49,9 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('download_file', name=filename))
+            response = jsonify({'some': 'data'})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response
     return '''
     <!doctype html>
     <title>Upload new File</title>

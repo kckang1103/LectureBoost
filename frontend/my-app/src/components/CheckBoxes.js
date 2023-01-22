@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate, navigation } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormLabel from '@mui/material/FormLabel';
@@ -9,6 +10,8 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Slider from '@mui/material/Slider';
 import Checkbox from '@mui/material/Checkbox';
 import axios from "axios"
+import { LinearProgress } from '@mui/material';
+
 
 export default function CheckBoxes(props) {
   const [state, setState] = React.useState({
@@ -18,6 +21,9 @@ export default function CheckBoxes(props) {
     transcribe: false,
     slides: false,
   });
+  const [loading, setLoading] = React.useState(false)
+  const navigate = useNavigate();
+
 
   const handleChange = (event) => {
     setState({
@@ -26,16 +32,31 @@ export default function CheckBoxes(props) {
     });
   };
   
-  const submit = (event) => {
+  async function submit() {
     let formData = new FormData();
     formData.append("file", props.file);
-    axios.post('http://127.0.0.1:8001/file', formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
+    setLoading(true)
+    try {
+      const {data} = await axios.post(`http://127.0.0.1:8001/file/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        }
+      });
+    } catch (err) {
+      console.error(err);
+    }
+    
+    setLoading(false)
+
+    navigate("/Display", {
+      state: {
+        whitespace: whitespace,
+        whitespace_val: whitespace_val,
+        transcribe: transcribe,
+        slides: slides,
+        subtitles: subtitles,
       }
     });
-
-    axios.post(`http://127.0.0.1:8001/methods/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}`)
   };
 
   const handleSlider = (event, value) => {
@@ -94,6 +115,7 @@ export default function CheckBoxes(props) {
         </FormControl>
       </Box>
       <Button variant="contained" onClick={submit}>Submit</Button>
+      {loading && <LinearProgress />}
     </>
   );
 }
