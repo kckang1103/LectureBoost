@@ -72,9 +72,9 @@ export default function CheckBoxes(props) {
         transcribe: transcribe,
         slides: slides,
         subtitles: subtitles,
-        video_link: linkState.video_link,
-        slides_link: linkState.slides_link,
-        transcript_link: linkState.transcript_link,
+        video_link: video_link,
+        slides_link: slides_link,
+        transcript_link: transcript_link,
       }
     });
   };
