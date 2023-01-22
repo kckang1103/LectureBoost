@@ -67,7 +67,7 @@ export default function CheckBoxes(props) {
 
   return (
     <>
-      <Box sx={{ display: 'flex', width: 1000 }}>
+      {!loading && <><Box sx={{ display: 'flex', width: 1000 }}>
         <FormControl
           required
           component="fieldset"
@@ -114,7 +114,7 @@ export default function CheckBoxes(props) {
           <FormHelperText>Choose at least 1</FormHelperText>
         </FormControl>
       </Box>
-      <Button variant="contained" onClick={submit}>Submit</Button>
+      <Button variant="contained" onClick={submit}>Submit</Button></>}
       {loading && <LinearProgress />}
     </>
   );
