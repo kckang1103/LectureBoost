@@ -2,7 +2,6 @@ import React from "react";
 import { AiOutlineCloudUpload } from 'react-icons/ai';
 import CheckBoxes from "./CheckBoxes";
 
-
 export default function DragDrop() {
   const height = 400;
   const width = 500;
@@ -10,6 +9,7 @@ export default function DragDrop() {
   const [dragActive, setDragActive] = React.useState(false);
   const inputRef = React.useRef(null);
   const [source, setSource] = React.useState();
+  const [file, setFile] = React.useState();
 
 
   // handle drag events
@@ -28,6 +28,7 @@ export default function DragDrop() {
 
     const url = URL.createObjectURL(files[0]);
     setSource(url);
+    setFile(files[0])
     // var video = document.createElement("video");
     // video.controls = true;
     // video.src = window.URL.createObjectURL(file);
@@ -77,7 +78,7 @@ export default function DragDrop() {
       }
       {source && (
         <>
-          <CheckBoxes className="CheckBoxes" />
+          <CheckBoxes className="CheckBoxes" file={file}/>
           <video
             className="VideoInput_video"
             width={width}

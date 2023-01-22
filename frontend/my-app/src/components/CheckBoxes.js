@@ -7,8 +7,9 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
+import axios from "axios"
 
-export default function CheckBoxes() {
+export default function CheckBoxes(props) {
   const [state, setState] = React.useState({
     whitespace: true,
     subtitles: false,
@@ -22,6 +23,18 @@ export default function CheckBoxes() {
       [event.target.name]: event.target.checked,
     });
   };
+  
+  const submit = (event) => {
+    let formData = new FormData();
+    formData.append("file", props.file);
+    axios.post('http://127.0.0.1:8001/file', formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    });
+
+    axios.post(`http://127.0.0.1:8001/methods/${whitespace}/${subtitles}/${transcribe}/${slides}`)
+  }
 
   const { whitespace, subtitles, transcribe, slides } = state;
 
@@ -64,7 +77,7 @@ export default function CheckBoxes() {
           <FormHelperText>Choose at least 1</FormHelperText>
         </FormControl>
       </Box>
-      <Button variant="contained">Submit</Button>
+      <Button variant="contained" onClick={submit}>Submit</Button>
     </>
   );
 }
