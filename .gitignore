@@ -20,3 +20,7 @@ frontend/myapp/npm-debug.log*
 frontend/myapp/yarn-debug.log*
 frontend/myapp/yarn-error.log*
 
+# backend
+venv/
+.idea
+.DS_STORE
