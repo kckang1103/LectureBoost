@@ -240,8 +240,7 @@ def subclipVideo(inFile, outFile, timestamps):
                           remove_temp=True, codec="libx264", audio_codec="aac")
 
 
-if __name__ == '__main__':
-
+def removeWhiteSpace(folderName, videoName):
     # Print starting bytes
     # hexGroups, hexOffsets = openFile("transcribedSpeech.wav")
     # smlGrp = [hexGroups[0], hexGroups[1], hexGroups[2], hexGroups[3],hexGroups[4],hexGroups[5], hexGroups[6]]
@@ -249,9 +248,10 @@ if __name__ == '__main__':
     # print(createHexViewer(smlGrp, smlOffsets))
 
     # Retrieve WAV set of samples
-    audio_clip = AudioFileClip("2_min.mp4")
-    audio_clip.write_audiofile("2_min_audio.wav")
-    wavData = getWavData("2_min_audio.wav")
+    audioName = videoName[:-4] + "_audio.wav"
+    audioClip = AudioFileClip(folderName + videoName)
+    audioClip.write_audiofile(folderName + audioName)
+    wavData = getWavData(folderName + audioName)
     byteNumbers, sampleNumbers, binSamples, decSamples = getWavSamples(wavData)
 
     # Convert WAV data (decimal audio values -> relative decibels) (byte numbers -> seconds)
@@ -264,13 +264,16 @@ if __name__ == '__main__':
 
     # Get timestamps with dB values less than
     lowTimestamps = getLowDecibelTimestamps(timestamps=timestamps, decibels=relativeDecibels)
-    print(lowTimestamps)
-    print(len(lowTimestamps))
+    #print(lowTimestamps)
+    #print(len(lowTimestamps))
 
     subclipRange = cutoutRangeToSubclipRange(lowTimestamps)
-    print(subclipRange)
-    print(len(subclipRange))
+    #print(subclipRange)
+    #print(len(subclipRange))
 
     # cutoutVideo(inFile="2_min.mp4", outFile="2_min_mod.mp4", timestamps=lowTimestamps)
     # ffmpegSubclipVideo(inFile="2_min.mp4", outFolder="videos/", timestamps=subclipRange)
-    subclipVideo(inFile="2_min.mp4", outFile="2_min_mod.mp4", timestamps=subclipRange)
+    subclipVideo(inFile=folderName + videoName, outFile=folderName + videoName[:-4] + "_cut.mp4", timestamps=subclipRange)
+
+if __name__ == "__main__":
+    removeWhiteSpace(folderName="uploads/", videoName="2_min.mp4")

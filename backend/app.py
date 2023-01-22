@@ -52,10 +52,10 @@ def allowed_file(filename):
 def download_file(name):
     return send_from_directory(app.config["UPLOAD_FOLDER"], name)
 
-@app.route('/methods/<whitespace>/<subtitles>/<transcript>/<slideshow>', methods=['POST'])
-def methods(whitespace, subtitles, transcript, slideshow):
+@app.route('/methods/<whitespace>/<whitespace_val>/<subtitles>/<transcript>/<slideshow>', methods=['POST'])
+def methods(whitespace, whitespace_val, subtitles, transcript, slideshow):
     if request.method == 'POST':
-        print(whitespace)
+        print(whitespace_val)
         
     return '<!doctype html>'
 
