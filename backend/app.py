@@ -113,7 +113,7 @@ import os
 
 import boto3
 from boto3 import Session
-from flask import Flask, flash, request, redirect, url_for
+from flask import Flask, flash, request, redirect, url_for, jsonify
 from flask import send_from_directory
 from werkzeug.utils import secure_filename
 
@@ -177,15 +177,17 @@ def methods(whitespace, whitespace_val, subtitles, transcript, slideshow):
     return '<!doctype html>'
 
 
-@app.route('/file', methods=['GET', 'POST'])
-def upload_file():
+@app.route('/file/<whitespace>/<whitespace_val>/<subtitles>/<transcript>/<slideshow>', methods=['GET', 'POST'])
+def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
     if request.method == 'POST':
         # check if the post request has the file part
+        print(whitespace_val)
         if 'file' not in request.files:
             flash('No file part')
             return redirect(request.url)
         file = request.files['file']
-        print(file.content_type)
+
+        print(file.content_length)
         # If the user does not select a file, the browser submits an
         # empty file without a filename.
         if file.filename == '':
@@ -206,7 +208,11 @@ def upload_file():
 
             #filename = secure_filename(file.filename)
             #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('download_file', name=filename))
+            # filename = secure_filename(file.filename)
+            # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            response = jsonify({'some': 'data'})
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response
     return '''
     <!doctype html>
     <title>Upload new File</title>
