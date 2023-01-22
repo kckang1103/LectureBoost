@@ -31,14 +31,14 @@ export default function CheckBoxes(props) {
     formData.append("file", props.file);
     // TODO: change this link later: origional "http://127.0.0.1:8001/file"
     // http://ec2-3-19-73-9.us-east-2.compute.amazonaws.com:8080/file
-    axios.post('http://ec2-3-19-73-9.us-east-2.compute.amazonaws.com:8080/file', formData, {
+    axios.post(`http://127.0.0.1:8080/file/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       }
     });
     //TODO: change this link later: original 
-    // axios.post(`http://127.0.0.1:8001/methods/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}`)
-    axios.post(`http://ec2-3-19-73-9.us-east-2.compute.amazonaws.com:8080/methods/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}`)
+    // axios.post(`http://127.0.0.1:8080/methods/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}`)
+    // axios.post(`http://ec2-3-19-73-9.us-east-2.compute.amazonaws.com:8080/methods/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}`)
 
   };
 
