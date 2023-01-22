@@ -21,6 +21,11 @@ export default function CheckBoxes(props) {
     transcribe: false,
     slides: false,
   });
+  const [videoState, setVideoState] = React.useState();
+  const [slidesState, setSlideState] = React.useState();
+  const [transcriptState, setTranscriptState] = React.useState();
+
+
   const [linkState, setLinkState] = React.useState({
     video_link: '',
     slides_link: '',
@@ -54,29 +59,36 @@ export default function CheckBoxes(props) {
       console.log(data.transcript);
       console.log(data.video);
      
+      setVideoState(data.video);
+      setTranscriptState(data.transcript);
+      setSlideState(data.slides);
+
       setLinkState({
         video_link: data.video,
         slides_link: data.slides,
         transcript_link: data.transcript,
       })
+
+      console.log(linkState);
+      setLoading(false)
+
+      navigate("/Display", {
+        state: {
+          whitespace: whitespace,
+          whitespace_val: whitespace_val,
+          transcribe: transcribe,
+          slides: slides,
+          subtitles: subtitles,
+          video_link: data.video,
+          slides_link: data.slides,
+          transcript_link: data.transcript,
+        }
+      });
     } catch (err) {
       console.error(err);
     }
     
-    setLoading(false)
-
-    navigate("/Display", {
-      state: {
-        whitespace: whitespace,
-        whitespace_val: whitespace_val,
-        transcribe: transcribe,
-        slides: slides,
-        subtitles: subtitles,
-        video_link: video_link,
-        slides_link: slides_link,
-        transcript_link: transcript_link,
-      }
-    });
+    
   };
 
   const handleSlider = (event, value) => {
