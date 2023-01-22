@@ -6,12 +6,14 @@ import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
+import Slider from '@mui/material/Slider';
 import Checkbox from '@mui/material/Checkbox';
 import axios from "axios"
 
 export default function CheckBoxes(props) {
   const [state, setState] = React.useState({
     whitespace: true,
+    whitespace_val: 0.3,
     subtitles: false,
     transcribe: false,
     slides: false,
@@ -33,10 +35,14 @@ export default function CheckBoxes(props) {
       }
     });
 
-    axios.post(`http://127.0.0.1:8001/methods/${whitespace}/${subtitles}/${transcribe}/${slides}`)
-  }
+    axios.post(`http://127.0.0.1:8001/methods/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}`)
+  };
 
-  const { whitespace, subtitles, transcribe, slides } = state;
+  const handleSlider = (event, value) => {
+    setState({...state, whitespace_val: value})
+  };
+
+  const { whitespace, whitespace_val, subtitles, transcribe, slides } = state;
 
   return (
     <>
@@ -51,10 +57,20 @@ export default function CheckBoxes(props) {
           <FormGroup>
             <FormControlLabel
               control={
-                <Checkbox checked={whitespace} onChange={handleChange} name="whitespace" disabled />
+                <Checkbox checked={whitespace} onChange={handleChange} name="whitespace" />
               }
               label="Remove Whitespaces"
             />
+            {whitespace && <Slider 
+              defaultValue={0.3} 
+              aria-label="Default" 
+              valueLabelDisplay="auto" 
+              step={0.05}
+              min={0.3}
+              max={1}
+              value={state.whitespace_val}
+              onChange={handleSlider}
+            />}
             <FormControlLabel
               control={
                 <Checkbox checked={subtitles} onChange={handleChange} name="subtitles" />
