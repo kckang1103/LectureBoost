@@ -2,23 +2,23 @@
 
 # dependencies
 frontend/my-app/node_modules
-frontend/myapp/.pnp
-frontend/myapp/.pnp.js
+frontend/my-app/.pnp
+frontend/my-app/.pnp.js
 
 
 # production
 /build
 
 # misc
-frontend/myapp/.DS_Store
-frontend/myapp/.env.local
-frontend/myapp/.env.development.local
-frontend/myapp/.env.test.local
-frontend/myapp/.env.production.local
+frontend/my-app/.DS_Store
+frontend/my-app/.env.local
+frontend/my-app/.env.development.local
+frontend/my-app/.env.test.local
+frontend/my-app/.env.production.local
 
-frontend/myapp/npm-debug.log*
-frontend/myapp/yarn-debug.log*
-frontend/myapp/yarn-error.log*
+frontend/my-app/npm-debug.log*
+frontend/my-app/yarn-debug.log*
+frontend/my-app/yarn-error.log*
 
 # backend
 venv/

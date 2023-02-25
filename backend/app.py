@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 
 import boto3
 from flask import Flask, flash, request, redirect, jsonify
@@ -9,6 +10,8 @@ from generateSlides import generate_slides
 from subtitles import add_subtitles
 from transcribe import transcribe
 from whiteSpace import removeWhiteSpace
+
+load_dotenv()
 
 s3 = boto3.client(
     "s3",
