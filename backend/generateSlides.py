@@ -78,6 +78,7 @@ def generate_slides(video_file):
         err = np.sum(diff ** 2)
         mse = err / (float(h * w))
 
+        # initial 2.5
         return mse < 2.5
 
 
@@ -88,6 +89,7 @@ def generate_slides(video_file):
         for i in range(min_len):
             similarity_average += SequenceMatcher(None, arr1[i], arr2[i]).ratio()
 
+        # initial 0.5
         return similarity_average / min_len > 0.5
 
 

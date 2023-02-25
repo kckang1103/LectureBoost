@@ -1,1 +1,0 @@
-I don't know so this is electric too in the introductory lecture we gave overview what the compiler does so today we'll start the technical any of the first face of a compiler as a Mexico analysis very behind this technology is a finite automata you may or may not 

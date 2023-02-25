@@ -25,16 +25,18 @@ app.add_url_rule(
     "/uploads/<name>", endpoint="download_file", build_only=True
 )
 
+
 def upload_pdf_to_s3(filename):
     resource = boto3.resource(
         "s3",
         aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
         aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'))
     resource.Object("lecture-boost", filename).upload_file(filename)
-    location = s3.get_bucket_location(Bucket=os.environ.get("AWS_BUCKET_NAME"))['LocationConstraint']
-    url = "https://%s.s3.%s.amazonaws.com/%s" % (os.environ.get("AWS_BUCKET_NAME"), location, filename)
+    location = s3.get_bucket_location(Bucket=os.getenv("AWS_BUCKET_NAME"))['LocationConstraint']
+    url = "https://%s.s3.%s.amazonaws.com/%s" % (os.getenv("AWS_BUCKET_NAME"), location, filename)
 
     return url
+
 
 def upload_file_to_s3(file, filename, acl="public-read"):
     try:
@@ -45,15 +47,14 @@ def upload_file_to_s3(file, filename, acl="public-read"):
         )
 
     except Exception as e:
-        # This is a catch all exception, edit this part to fit your needs.
         print("Something Happened: ", e)
-        return e
+        return
 
     # after upload file to s3 bucket, return filename of the uploaded file
-    location = s3.get_bucket_location(Bucket=os.environ.get("AWS_BUCKET_NAME"))['LocationConstraint']
+    location = s3.get_bucket_location(Bucket=os.getenv("AWS_BUCKET_NAME"))['LocationConstraint']
     print(location)
     # url = "https://s3-%s.amazonaws.com/%s/%s" % (location, os.environ.get("AWS_BUCKET_NAME"), filename)
-    url = "https://%s.s3.%s.amazonaws.com/%s" % (os.environ.get("AWS_BUCKET_NAME"), location, filename)
+    url = "https://%s.s3.%s.amazonaws.com/%s" % (os.getenv("AWS_BUCKET_NAME"), location, filename)
     print(url)
 
     return url
@@ -66,7 +67,8 @@ def allowed_file(filename):
 
 @app.route('/uploads/shravan')
 def return_shravan():
-    return {"hello ": "shravan"}
+    return {"hello ": "shravan",
+            "hi ": "I am shravan"}
 
 
 @app.route('/uploads/<name>')
@@ -76,7 +78,6 @@ def download_file(name):
 
 @app.route('/file/<whitespace>/<whitespace_val>/<subtitles>/<transcript>/<slideshow>', methods=['GET', 'POST'])
 def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
-
     response = {
         "transcript": "",
         "video": "",
@@ -102,14 +103,15 @@ def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-
             if whitespace == "true":
                 print("whitespace is true")
                 removeWhiteSpace(folderName="uploads/", videoName=file.filename)
                 white_space_filename = "uploads/" + file.filename[:-4] + "_cut.mp4"
                 if subtitles == "true":
+                    print("subtitles is true")
                     add_subtitles(white_space_filename)
                 if transcript == "true":
+                    print("transcript is true")
                     transcribe(white_space_filename)
                     with open("uploads/transcription.txt", "rb") as f:
                         response_from_s3 = upload_file_to_s3(f, "uploads/transcription.txt")
@@ -119,6 +121,7 @@ def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
                         else:
                             print("transcript upload failed")
                 if slideshow == "true":
+                    print("slideshow is true")
                     generate_slides(white_space_filename)
                     with open("uploads/slides.pdf", "rb") as f:
                         with open("uploads/textFromSlides.txt", "rb") as f2:
@@ -147,9 +150,10 @@ def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
 
                 no_white_space_filename = "uploads/" + file.filename
                 if subtitles == "true":
+                    print("make subtitles")
                     add_subtitles(no_white_space_filename)
                     file_to_upload = open(no_white_space_filename, "r")
-                    response_from_s3 = upload_file_to_s3(file_to_upload, "uploads/" + file.filename[:-4] + "_cut.mp4")
+                    response_from_s3 = upload_file_to_s3(file_to_upload, no_white_space_filename)
                     response["video"] = response_from_s3
                     if response_from_s3:
                         print("success uploading to s3", response_from_s3)
@@ -180,8 +184,6 @@ def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
                         print("success uploading text fr slide to s3", response_from_s3)
                     else:
                         print("text from slide upload failed")
-
-
 
     print("response: \n", response)
     final_response = jsonify(response)
