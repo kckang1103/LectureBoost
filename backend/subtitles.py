@@ -12,7 +12,7 @@ os.environ["IMAGEIO_FFMPEG_EXE"] = "/opt/homebrew/Cellar/ffmpeg/5.1.2_3/bin/ffmp
 def add_subtitles(video_file):
 
     result_video_file = video_file
-    transcribed_audio_file = "transcribed_speech.wav"
+    transcribed_audio_file = "uploads/transcribed_speech.wav"
 
     # loading video file clip
     video_clip = VideoFileClip(video_file)
@@ -55,6 +55,10 @@ def add_subtitles(video_file):
         except Exception as e:
             subtitles.append(((i * chunk_size, i * chunk_size + chunk_size), transcribed_text))
 
+
+    # stop if there are no subtitles to be added
+    if len(subtitles) == 0:
+        return -1
 
     # create subtitles clip with below attributes
     generator = lambda txt: TextClip(txt, font='Arial', fontsize=30, color='white', bg_color='black')

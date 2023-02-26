@@ -24,7 +24,7 @@ s3 = boto3.client(
 )
 
 UPLOAD_FOLDER = './uploads'
-ALLOWED_EXTENSIONS = {'mp4', 'py', 'txt'}
+ALLOWED_EXTENSIONS = {'mp4'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -44,14 +44,26 @@ def make_signed_pdf_url(key):
     return url
 
 
+def make_signed_txt_url(key):
+    url = s3.generate_presigned_url(
+    ClientMethod='get_object', 
+    Params={
+        'Bucket': os.getenv('AWS_BUCKET_NAME'), 
+        'Key': key, f"ResponseContentDisposition": "inline; filename={key}", 
+        "ResponseContentType" : "text/plain"
+        },
+    ExpiresIn=3600)
+    return url
+
+
 def upload_pdf_to_s3(filename):
     resource = boto3.resource(
         "s3",
         aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
         aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'))
     resource.Object("lecture-boost", filename).upload_file(filename)
-    location = s3.get_bucket_location(Bucket=os.getenv("AWS_BUCKET_NAME"))['LocationConstraint']
-    url = "https://%s.s3.%s.amazonaws.com/%s" % (os.getenv("AWS_BUCKET_NAME"), location, filename)
+    # location = s3.get_bucket_location(Bucket=os.getenv("AWS_BUCKET_NAME"))['LocationConstraint']
+    # url = "https://%s.s3.%s.amazonaws.com/%s" % (os.getenv("AWS_BUCKET_NAME"), location, filename)
     url = make_signed_pdf_url(filename)
     return url
 
@@ -78,11 +90,67 @@ def upload_file_to_s3(file, filename, acl="public-read"):
     return url
 
 
+def process_file(file, whitespace, whitespace_val, slideshow, subtitles, transcript):
+    response = {
+        "transcript": "",
+        "video": "",
+        "textFromSlides": "",
+        "slides": ""
+    }
+
+    filename = "uploads/" + file.filename
+    if whitespace == "true":
+        print("whitespace is true")
+        removeWhiteSpace(folderName="uploads/", videoName=file.filename)
+        filename = "uploads/" + file.filename[:-4] + "_cut.mp4"
+        with open(filename, "rb") as f:
+            response_from_s3 = upload_file_to_s3(f, filename)
+            response["video"] = response_from_s3
+            if response_from_s3:
+                print("success uploading to s3", response_from_s3)
+            else:
+                print("upload failed")
+    if subtitles == "true":
+        print("subtitles is true")
+        res = add_subtitles(filename)
+    if transcript == "true":
+        print("transcript is true")
+        transcribe(filename)
+        with open("uploads/transcription.txt", "rb") as f:
+            upload_file_to_s3(f, "uploads/transcription.txt")
+            signed_url = make_signed_txt_url("uploads/transcription.txt")
+            response["transcript"] = signed_url
+            if signed_url:
+                print("success uploading transcript to s3", response_from_s3)
+            else:
+                print("transcript upload failed")
+    if slideshow == "true":
+        print("slideshow is true")
+        generate_slides(filename)
+        with open("uploads/slides.pdf", "rb") as f:
+            with open("uploads/textFromSlides.txt", "rb") as f2:
+                response_from_s3 = upload_file_to_s3(f, "uploads/slides.pdf")
+                response["slides"] = upload_pdf_to_s3("uploads/slides.pdf")
+                if response_from_s3:
+                    print("success uploading slides to s3", response_from_s3)
+                else:
+                    print("slides upload failed")
+                response_from_s3 = upload_file_to_s3(f2, "uploads/textFromSlides.txt")
+                response["textFromSlides"] = response_from_s3
+                if response_from_s3:
+                    print("success uploading text fr slide to s3", response_from_s3)
+                else:
+                    print("text from slide upload failed")
+
+    return response
+
+
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
+# This function is fire
 @app.route('/uploads/shravan')
 def return_shravan():
     return {"hello ": "shravan",
@@ -121,93 +189,11 @@ def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            if whitespace == "true":
-                print("whitespace is true")
-                removeWhiteSpace(folderName="uploads/", videoName=file.filename)
-                white_space_filename = "uploads/" + file.filename[:-4] + "_cut.mp4"
-                if subtitles == "true":
-                    print("subtitles is true")
-                    add_subtitles(white_space_filename)
-                if transcript == "true":
-                    print("transcript is true")
-                    transcribe(white_space_filename)
-                    with open("uploads/transcription.txt", "rb") as f:
-                        response_from_s3 = upload_file_to_s3(f, "uploads/transcription.txt")
-                        response["transcript"] = response_from_s3
-                        if response_from_s3:
-                            print("success uploading transcript to s3", response_from_s3)
-                        else:
-                            print("transcript upload failed")
-                if slideshow == "true":
-                    print("slideshow is true")
-                    generate_slides(white_space_filename)
-                    with open("uploads/slides.pdf", "rb") as f:
-                        with open("uploads/textFromSlides.txt", "rb") as f2:
-                            response_from_s3 = upload_file_to_s3(f, "uploads/slides.pdf")
-                            response["slides"] = upload_pdf_to_s3("uploads/slides.pdf")
-                            if response_from_s3:
-                                print("success uploading slides to s3", response_from_s3)
-                            else:
-                                print("slides upload failed")
-                            response_from_s3 = upload_file_to_s3(f2, "uploads/textFromSlides.txt")
-                            response["textFromSlides"] = response_from_s3
-                            if response_from_s3:
-                                print("success uploading text fr slide to s3", response_from_s3)
-                            else:
-                                print("text from slide upload failed")
-
-                with open(white_space_filename, "rb") as f:
-                    response_from_s3 = upload_file_to_s3(f, white_space_filename)
-                    response["video"] = response_from_s3
-                    if response_from_s3:
-                        print("success uploading to s3", response_from_s3)
-                    else:
-                        print("upload failed")
-            else:
-                print("whitespace is false")
-
-                no_white_space_filename = "uploads/" + file.filename
-                if subtitles == "true":
-                    print("make subtitles")
-                    add_subtitles(no_white_space_filename)
-                    file_to_upload = open(no_white_space_filename, "r")
-                    response_from_s3 = upload_file_to_s3(file_to_upload, no_white_space_filename)
-                    response["video"] = response_from_s3
-                    if response_from_s3:
-                        print("success uploading to s3", response_from_s3)
-                    else:
-                        print("upload failed")
-                if transcript == "true":
-                    transcribe(no_white_space_filename)
-                    transcription_to_upload = open("uploads/transcription.txt", "rb")
-                    response_from_s3 = upload_file_to_s3(transcription_to_upload, "uploads/transcription.txt")
-                    response["transcript"] = response_from_s3
-                    if response_from_s3:
-                        print("success uploading transcript to s3", response_from_s3)
-                    else:
-                        print("transcript upload failed")
-                if slideshow == "true":
-                    generate_slides(no_white_space_filename)
-                    slides_to_upload = open("uploads/slides.pdf", "rb")
-                    text_from_slides_to_upload = open("uploads/textFromSlides.txt", "rb")
-                    response_from_s3 = upload_file_to_s3(slides_to_upload, "uploads/slides.pdf")
-                    response["slides"] = str(upload_pdf_to_s3("uploads/slides.pdf"))
-                    if response_from_s3:
-                        print("success uploading slides to s3", response_from_s3)
-                    else:
-                        print("slides upload failed")
-                    response_from_s3 = upload_file_to_s3(text_from_slides_to_upload, "uploads/textFromSlides.txt")
-                    response["textFromSlides"] = response_from_s3
-                    if response_from_s3:
-                        print("success uploading text fr slide to s3", response_from_s3)
-                    else:
-                        print("text from slide upload failed")
+            response = process_file(file, whitespace, whitespace_val, slideshow, subtitles, transcript)
 
     print("response: \n", response)
     final_response = jsonify(response)
     final_response.headers.add('Access-Control-Allow-Origin', '*')
-    # if slideshow:
-    #     final_response.headers.add(f"Content-Disposition", f"inline; filename=\"{response['slides']}\"")
     print("final response: \n", final_response.headers)
 
     return final_response
