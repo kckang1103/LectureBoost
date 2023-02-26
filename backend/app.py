@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 
 import boto3
+from botocore.client import Config
 from flask import Flask, flash, request, redirect, jsonify
 from flask import send_from_directory
 from werkzeug.utils import secure_filename
@@ -16,7 +17,10 @@ load_dotenv()
 s3 = boto3.client(
     "s3",
     aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
-    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+    config=Config(region_name='us-east-2', signature_version='s3v4')
+    
+    
 )
 
 UPLOAD_FOLDER = './uploads'
@@ -28,6 +32,17 @@ app.add_url_rule(
     "/uploads/<name>", endpoint="download_file", build_only=True
 )
 
+def make_signed_pdf_url(key):
+    url = s3.generate_presigned_url(
+    ClientMethod='get_object', 
+    Params={
+        'Bucket': os.getenv('AWS_BUCKET_NAME'), 
+        'Key': key, f"ResponseContentDisposition": "inline; filename={key}", 
+        "ResponseContentType" : "application/pdf"
+        },
+    ExpiresIn=3600)
+    return url
+
 
 def upload_pdf_to_s3(filename):
     resource = boto3.resource(
@@ -37,7 +52,7 @@ def upload_pdf_to_s3(filename):
     resource.Object("lecture-boost", filename).upload_file(filename)
     location = s3.get_bucket_location(Bucket=os.getenv("AWS_BUCKET_NAME"))['LocationConstraint']
     url = "https://%s.s3.%s.amazonaws.com/%s" % (os.getenv("AWS_BUCKET_NAME"), location, filename)
-
+    url = make_signed_pdf_url(filename)
     return url
 
 
@@ -191,7 +206,9 @@ def upload_file(whitespace, whitespace_val, subtitles, transcript, slideshow):
     print("response: \n", response)
     final_response = jsonify(response)
     final_response.headers.add('Access-Control-Allow-Origin', '*')
-    print("final response: \n", final_response)
+    # if slideshow:
+    #     final_response.headers.add(f"Content-Disposition", f"inline; filename=\"{response['slides']}\"")
+    print("final response: \n", final_response.headers)
 
     return final_response
 
@@ -201,5 +218,5 @@ if __name__ == '__main__':
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
     # app.run(debug=True, port=8001)
-    app.run(host='0.0.0.0', port=8080)
+    app.run(threaded=True, host='0.0.0.0', port=8080)
     print(os.environ.get("AWS_BUCKET_NAME"))
