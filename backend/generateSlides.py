@@ -8,7 +8,6 @@ from difflib import SequenceMatcher
 
 
 def generate_slides(video_file):
-    #video_file = '../Chen.mp4'
     text_from_slides_file = './uploads/textFromSlides.txt'
     video_capture = cv2.VideoCapture(video_file)
 
