@@ -24,15 +24,9 @@ export default function DragDrop() {
   };
 
   const handleFile = function (files) {
-    // alert("Number of files: " + files.length);
-
     const url = URL.createObjectURL(files[0]);
     setSource(url);
     setFile(files[0])
-    // var video = document.createElement("video");
-    // video.controls = true;
-    // video.src = window.URL.createObjectURL(file);
-    // document.body.appendChild(video);
   }
 
   // triggers when file is dropped

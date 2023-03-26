@@ -8,7 +8,6 @@ from difflib import SequenceMatcher
 
 
 def generate_slides(video_file):
-    #video_file = '../Chen.mp4'
     text_from_slides_file = './uploads/textFromSlides.txt'
     video_capture = cv2.VideoCapture(video_file)
 
@@ -104,7 +103,7 @@ def generate_slides(video_file):
 
         if ret:
             # get a frame every 10 seconds
-            image_name = 'frame{:d}.jpg'.format(count)
+            image_name = 'uploads/frame{:d}.jpg'.format(count)
             cv2.imwrite(image_name, frame)
             seconds = fps * count
             video_capture.set(cv2.CAP_PROP_POS_FRAMES, seconds)
@@ -118,7 +117,7 @@ def generate_slides(video_file):
                     slides_stack.append(count)
                 else:
                     last_slide_added = slides_stack.pop(-1)
-                    last_image_name = 'frame{:d}.jpg'.format(last_slide_added)
+                    last_image_name = 'uploads/frame{:d}.jpg'.format(last_slide_added)
                     if is_image_similar(last_image_name, image_name) or is_text_similar(extracted_text, slides[last_slide_added].text):
                         slides_stack.append(count)
                         slides[count] = Pair(extracted_text, [slides[last_slide_added].time[0], count])
@@ -134,7 +133,7 @@ def generate_slides(video_file):
 
     # iterate through the slides and create a pdf file of slides
     images = [
-        Image.open('frame{:d}.jpg'.format(id))
+        Image.open('uploads/frame{:d}.jpg'.format(id))
         for id in slides
     ]
 
