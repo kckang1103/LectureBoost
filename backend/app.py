@@ -40,7 +40,7 @@ def make_signed_pdf_url(key):
     ClientMethod='get_object', 
     Params={
         'Bucket': os.getenv('AWS_BUCKET_NAME'), 
-        'Key': key, "ResponseContentDisposition": "inline; filename={key}", 
+        'Key': key, "ResponseContentDisposition": f"inline; filename={key}", 
         "ResponseContentType" : "application/pdf"
         },
     ExpiresIn=3600)
@@ -52,7 +52,7 @@ def make_signed_txt_url(key):
     ClientMethod='get_object', 
     Params={
         'Bucket': os.getenv('AWS_BUCKET_NAME'), 
-        'Key': key, f"ResponseContentDisposition": "inline; filename={key}", 
+        'Key': key, "ResponseContentDisposition": f"inline; filename={key}", 
         "ResponseContentType" : "text/plain"
         },
     ExpiresIn=3600)
