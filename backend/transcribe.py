@@ -8,16 +8,12 @@ def transcribe(video_file):
     transcription_file = "./uploads/transcription.txt"
     transcribed_audio_file = "./uploads/transcribed_speech.wav"
 
-    # loading video file clip
-    video_clip = VideoFileClip(video_file)
-
     # get the audio clip from the video
     audio_clip = AudioFileClip(video_file)
     audio_clip.write_audiofile(transcribed_audio_file)
 
     # number of seconds for each chunk
-    chunk_size = 10
-    subtitles = []
+    chunk_size = 30
 
     # speech recognition recognizer
     r = sr.Recognizer()
@@ -51,7 +47,7 @@ def transcribe(video_file):
             print(e)
             continue
 
-        if len(transcribed_text) == 0 or transcribed_text == "":
+        if len(transcribed_text) == 0:
             continue
 
         # write to the transcription file

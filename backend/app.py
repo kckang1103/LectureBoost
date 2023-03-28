@@ -19,8 +19,6 @@ s3 = boto3.client(
     aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
     aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
     config=Config(region_name='us-east-2', signature_version='s3v4')
-    
-    
 )
 
 UPLOAD_FOLDER = './uploads'
@@ -101,7 +99,7 @@ def run_whitespace(file_name, minimum_duration, response):
         else:
             print("upload failed")
 
-    return response
+    return response, file_name
 
 
 def run_transcript(file_name, response):
@@ -149,7 +147,7 @@ def process_file(file, whitespace, minimum_duration, slideshow, subtitles, trans
 
     filename = "uploads/" + file.filename
     if whitespace == "true":
-        response = run_whitespace(filename, minimum_duration, response)
+        response, filename = run_whitespace(filename, minimum_duration, response)
     if subtitles == "true":
         print("subtitles is true")
         add_subtitles(filename)
