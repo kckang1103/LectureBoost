@@ -44,8 +44,6 @@ def cut_silence(file_name, minimum_duration):
             
             clip_duration = float(to) - start
 
-            # print('Clip Duration: {} seconds'.format(clip_duration))
-
             if clip_duration < minimum_duration:
                 last = end
                 continue
@@ -56,7 +54,6 @@ def cut_silence(file_name, minimum_duration):
             if start > EASE:
                 start -= EASE
 
-            # print('Clip {} (Start: {}, End: {})'.format(count, start, to))
             video_clip = video.subclip(start, to)
             video_clips.append(video_clip)
             audio_clip = audio.subclip(start, to)
