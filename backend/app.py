@@ -28,6 +28,7 @@ SLIDES_FILE = 'uploads/slides.pdf'
 TEXT_FROM_SLIDES_FILE = 'uploads/textFromSlides.txt'
 TRANSCRIPT_FILE = 'uploads/transcription.txt'
 ALLOWED_EXTENSIONS = {'mp4'}
+TEMP_EMAIL = 'sctarr@gmail.com'
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -209,7 +210,7 @@ def upload_file(whitespace, minimum_duration, subtitles, transcript, slideshow):
     links.append(response['slides'])
     links.append(response['video'])
     links.append(response['transcript'])
-    send_links(links, 'sctarr@gmail.com')
+    send_links(links, TEMP_EMAIL)
 
     print('response: \n', response)
     final_response = jsonify(response)
