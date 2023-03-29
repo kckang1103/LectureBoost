@@ -6,10 +6,6 @@
   </a>
 
 <h3 align="center">LectureBoost</h3>
-
-  <p align="center">
-    <a href="https://github.com/github_username/repo_name">View Demo</a> 
-  </p>
 </div>
 
 
