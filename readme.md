@@ -60,7 +60,7 @@ Subtitles:
 ## Roadmap
 
 - [ ] Migrate to DigitalOcean
-- [ ] Add email service
+- [x] Add email service
 - [ ] Add multiprocessing/threading to enhancement scripts
     - [x] Silence removal
     - [ ] Slide generation
