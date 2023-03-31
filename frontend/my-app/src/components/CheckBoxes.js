@@ -142,8 +142,8 @@ export default function CheckBoxes(props) {
             />
 
             {send_email && <TextField
-              id="first-name"
-              label="Name"
+              id="email"
+              label="Email"
               value={state.email}
               onChange={handleEmailChange}
               margin="normal"
