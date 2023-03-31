@@ -9,7 +9,6 @@ from werkzeug.utils import secure_filename
 
 from generateSlides import generate_slides
 from subtitles import add_subtitles
-#from transcribe import transcribe
 from transcribe import transcribe
 from silence import cut_silence
 
@@ -29,7 +28,6 @@ SLIDES_FILE = 'uploads/slides.pdf'
 TEXT_FROM_SLIDES_FILE = 'uploads/textFromSlides.txt'
 TRANSCRIPT_FILE = 'uploads/transcription.txt'
 ALLOWED_EXTENSIONS = {'mp4'}
-TEMP_EMAIL = 'sctarr@gmail.com'
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -141,6 +139,16 @@ def run_slideshow(file_name, response):
     return response
 
 
+def email_links(response, send_email, email):
+    if send_email == 'true':
+        links = []
+        links.append(response['slides'])
+        links.append(response['video'])
+        links.append(response['transcript'])
+        print(email)
+        send_links(links, email)
+
+
 def process_file(file, whitespace, minimum_duration, slideshow, subtitles, transcript):
     response = {
         'transcript': '',
@@ -179,15 +187,15 @@ def download_file(name):
     return send_from_directory(app.config['UPLOAD_FOLDER'], name)
 
 
-@app.route('/file/<whitespace>/<minimum_duration>/<subtitles>/<transcript>/<slideshow>', methods=['GET', 'POST'])
-def upload_file(whitespace, minimum_duration, subtitles, transcript, slideshow):
+@app.route('/file/<whitespace>/<minimum_duration>/<subtitles>/<transcript>/<slideshow>/<send_email>/<email>', methods=['GET', 'POST'])
+def upload_file(whitespace, minimum_duration, subtitles, transcript, slideshow, send_email, email):
     response = {
         'transcript': '',
         'video': '',
         'textFromSlides': '',
         'slides': ''
     }
-    links = []
+    
 
     if request.method == 'POST':
         # check if the post request has the file part
@@ -207,11 +215,7 @@ def upload_file(whitespace, minimum_duration, subtitles, transcript, slideshow):
             file_in.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
             response = process_file(file_in, whitespace, minimum_duration, slideshow, subtitles, transcript)
-    
-    links.append(response['slides'])
-    links.append(response['video'])
-    links.append(response['transcript'])
-    send_links(links, TEMP_EMAIL)
+            email_links(response, send_email, email)
 
     print('response: \n', response)
     final_response = jsonify(response)

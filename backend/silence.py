@@ -14,7 +14,7 @@ EASE = 0.0
 
 
 def generate_silence_file(file_name, minimum_duration):
-    command = f"ffmpeg -hide_banner -vn -i {file_name} -af \"silencedetect=n=${THRESH}dB:d=${minimum_duration}\" -f null - 2>&1 | grep \"silence_end\" | awk \'{{print $5 \" \" $8}}\' > {SILENCE_FILE}"
+    command = f"ffmpeg -hide_banner -vn -i {file_name} -af \"silencedetect=n=${THRESH}dB:d=${minimum_duration}\" -f null | grep \"silence_end\" | awk \'{{print $5 \" \" $8}}\' > {SILENCE_FILE}"
     command = shlex.split(command)
     subprocess.run(command)
 

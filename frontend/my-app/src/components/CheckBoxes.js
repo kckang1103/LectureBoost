@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigate, navigation } from "react-router-dom";
+import useNavigate from "react-router-dom";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormLabel from '@mui/material/FormLabel';
@@ -9,8 +9,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Slider from '@mui/material/Slider';
 import Checkbox from '@mui/material/Checkbox';
+import TextField from '@mui/material/TextField';
 import axios from "axios"
-import { LinearProgress } from '@mui/material';
+import LinearProgress from '@mui/material';
 
 
 export default function CheckBoxes(props) {
@@ -20,17 +21,16 @@ export default function CheckBoxes(props) {
     subtitles: false,
     transcribe: false,
     slides: false,
+    send_email: false,
+    email: "",
   });
-  const [videoState, setVideoState] = React.useState();
-  const [slidesState, setSlideState] = React.useState();
-  const [transcriptState, setTranscriptState] = React.useState();
 
 
-  const [linkState, setLinkState] = React.useState({
-    video_link: '',
-    slides_link: '',
-    transcript_link: '',
-  })
+  // const [linkState, setLinkState] = React.useState({
+  //   video_link: '',
+  //   slides_link: '',
+  //   transcript_link: '',
+  // })
 
   const [loading, setLoading] = React.useState(false)
   const navigate = useNavigate();
@@ -49,7 +49,8 @@ export default function CheckBoxes(props) {
     setLoading(true)
     
     try {
-      const {data} = await axios.post(`http://127.0.0.1:8080/file/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}`, formData, {
+      console.log(email);
+      const {data} = await axios.post(`http://127.0.0.1:8080/file/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}/${send_email}/${email}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         }
@@ -58,18 +59,7 @@ export default function CheckBoxes(props) {
       console.log(data.slides);
       console.log(data.transcript);
       console.log(data.video);
-     
-      setVideoState(data.video);
-      setTranscriptState(data.transcript);
-      setSlideState(data.slides);
 
-      setLinkState({
-        video_link: data.video,
-        slides_link: data.slides,
-        transcript_link: data.transcript,
-      })
-
-      console.log(linkState);
       setLoading(false)
 
       navigate("/Display", {
@@ -87,15 +77,17 @@ export default function CheckBoxes(props) {
     } catch (err) {
       console.error(err);
     }
-    
-    
   };
 
   const handleSlider = (event, value) => {
-    setState({...state, whitespace_val: value})
+    setState({...state, whitespace_val: value});
   };
 
-  const { whitespace, whitespace_val, subtitles, transcribe, slides } = state;
+  const handleEmailChange = (event) => {
+    setState({...state, email: event.target.value});
+  }
+
+  const { whitespace, whitespace_val, subtitles, transcribe, slides, send_email, email } = state;
 
   return (
     <>
@@ -103,7 +95,7 @@ export default function CheckBoxes(props) {
         <FormControl
           required
           component="fieldset"
-          sx={{ m: 3 }}
+          sx={{ m : 3 }}
           variant="standard"
         >
           <FormLabel component="legend">Choose your options</FormLabel>
@@ -142,8 +134,22 @@ export default function CheckBoxes(props) {
               }
               label="Generate Slideshow"
             />
+            <FormControlLabel
+              control={
+                <Checkbox checked={send_email} onChange={handleChange} name="send_email" />
+              }
+              label="Email Links"
+            />
+
+            {send_email && <TextField
+              id="first-name"
+              label="Name"
+              value={state.email}
+              onChange={handleEmailChange}
+              margin="normal"
+            />}
           </FormGroup>
-          <FormHelperText>Choose at least 1</FormHelperText>
+          <FormHelperText>Choose at least 1 except for email</FormHelperText>
         </FormControl>
       </Box>
       <Button variant="contained" onClick={submit}>Submit</Button></>}
