@@ -1,5 +1,5 @@
 import * as React from 'react';
-import useNavigate from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormLabel from '@mui/material/FormLabel';
@@ -11,7 +11,7 @@ import Slider from '@mui/material/Slider';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import axios from "axios"
-import LinearProgress from '@mui/material';
+import { LinearProgress } from '@mui/material';
 
 
 export default function CheckBoxes(props) {
