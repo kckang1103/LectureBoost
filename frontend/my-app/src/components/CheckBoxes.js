@@ -150,6 +150,7 @@ export default function CheckBoxes(props) {
             />}
           </FormGroup>
           <FormHelperText>Choose at least 1 except for email</FormHelperText>
+          <FormHelperText>We highly suggest you select email as well</FormHelperText>
         </FormControl>
       </Box>
       <Button variant="contained" onClick={submit}>Submit</Button></>}
