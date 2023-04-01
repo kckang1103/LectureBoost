@@ -9,7 +9,8 @@ from werkzeug.utils import secure_filename
 
 from generateSlides import generate_slides
 from subtitles import add_subtitles
-from transcribe import transcribe
+#from transcribe import transcribe
+from transcribeDeepgram import transcribe
 from silence import cut_silence
 
 from emails import send_links
