@@ -7,15 +7,15 @@ from moviepy.editor import VideoFileClip, AudioFileClip, concatenate_videoclips,
 
 # Silence timestamps
 SILENCE_FILE = 'uploads/silence.txt'
+DETECTION_SCRIPT = 'find_silence.sh'
 # dbs to mark clip as silent 
-THRESH = -50
+THRESH = '-20'
 # time between cuts
 EASE = 0.0
 
 
 def generate_silence_file(file_name, minimum_duration):
-    command = f"ffmpeg -hide_banner -vn -i {file_name} -af \"silencedetect=n=${THRESH}dB:d=${minimum_duration}\" -f null | grep \"silence_end\" | awk \'{{print $5 \" \" $8}}\' > {SILENCE_FILE}"
-    command = shlex.split(command)
+    command = [DETECTION_SCRIPT, file_name, THRESH, str(minimum_duration)]
     subprocess.run(command)
 
 

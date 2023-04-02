@@ -49,8 +49,12 @@ export default function CheckBoxes(props) {
     setLoading(true)
     
     try {
-      console.log(email);
-      const {data} = await axios.post(`http://127.0.0.1:8080/file/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}/${send_email}/${email}`, formData, {
+      var emailToSend = email;
+      console.log(email)
+      if (email.localeCompare("") === 0) {
+        emailToSend = "fake"
+      }
+      const {data} = await axios.post(`http://127.0.0.1:8080/file/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}/${send_email}/${emailToSend}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         }
