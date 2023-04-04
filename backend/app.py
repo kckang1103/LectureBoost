@@ -9,11 +9,12 @@ from werkzeug.utils import secure_filename
 
 from generateSlides import generate_slides
 from subtitles import add_subtitles
-#from transcribe import transcribe
-from transcribeDeepgram import transcribe
+from transcribe import transcribe
+# from transcribeDeepgram import transcribe
 from silence import cut_silence
 
 from emails import send_links
+from multiprocessing import Process, Queue
 
 load_dotenv()
 
@@ -24,10 +25,10 @@ s3 = boto3.client(
     config=Config(region_name='us-east-2', signature_version='s3v4')
 )
 
-UPLOAD_FOLDER = './uploads'
-SLIDES_FILE = 'uploads/slides.pdf'
-TEXT_FROM_SLIDES_FILE = 'uploads/textFromSlides.txt'
-TRANSCRIPT_FILE = 'uploads/transcription.txt'
+UPLOAD_FOLDER = os.getenv('UPLOADS_FOLDER')
+SLIDES_FILE = UPLOAD_FOLDER + 'slides.pdf'
+TEXT_FROM_SLIDES_FILE = UPLOAD_FOLDER + 'textFromSlides.txt'
+TRANSCRIPT_FILE = UPLOAD_FOLDER + 'transcription.txt'
 ALLOWED_EXTENSIONS = {'mp4'}
 
 app = Flask(__name__)
@@ -105,9 +106,10 @@ def run_whitespace(file_name, minimum_duration, response):
     return response, file_name
 
 
-def run_transcript(file_name, response):
+def run_transcript(file_name, response, queue):
     print('transcript is true')
-    transcribe(file_name)
+    transcribe(file_name, UPLOAD_FOLDER)
+    response = queue.get()
     with open(TRANSCRIPT_FILE, 'rb') as f:
         response_from_s3 = upload_file_to_s3(f, TRANSCRIPT_FILE)
         signed_url = make_signed_txt_url(TRANSCRIPT_FILE)
@@ -116,13 +118,15 @@ def run_transcript(file_name, response):
             print('success uploading transcript to s3', response_from_s3)
         else:
             print('transcript upload failed')
-    
+    queue.put(response)
     return response
 
 
-def run_slideshow(file_name, response):
+def run_slideshow(file_name, response, queue):
     print('slideshow is true')
-    generate_slides(file_name)
+    generate_slides(file_name, UPLOAD_FOLDER)
+    response = queue.get()
+
     with open(SLIDES_FILE, 'rb') as f, open(TEXT_FROM_SLIDES_FILE, 'rb') as f2:
         response_from_s3 = upload_file_to_s3(f, SLIDES_FILE)
         response['slides'] = upload_pdf_to_s3(SLIDES_FILE)
@@ -136,7 +140,7 @@ def run_slideshow(file_name, response):
             print('success uploading text fr slide to s3', response_from_s3)
         else:
             print('text from slide upload failed')
-    
+    queue.put(response)
     return response
 
 
@@ -157,18 +161,64 @@ def process_file(file, whitespace, minimum_duration, slideshow, subtitles, trans
         'textFromSlides': '',
         'slides': ''
     }
+    # just to pass to methods for testing reasons
+    queue = Queue()
+    queue.put("response")
 
-    filename = 'uploads/' + file.filename
+    filename = UPLOAD_FOLDER + file.filename
     if whitespace == 'true':
         response, filename = run_whitespace(filename, minimum_duration, response)
     if subtitles == 'true':
         print('subtitles is true')
-        add_subtitles(filename)
+        add_subtitles(filename, UPLOAD_FOLDER)
     if transcript == 'true':
-        response = run_transcript(filename, response)
+        response = run_transcript(filename, response, queue)
     if slideshow == 'true':
-        response = run_slideshow(filename, response)
+        response = run_slideshow(filename, response, queue)
 
+    return response
+
+
+
+def multiproc_file(file, whitespace, minimum_duration, slideshow, subtitles, transcript):
+    response = {
+        'transcript': '',
+        'video': '',
+        'textFromSlides': '',
+        'slides': ''
+    }
+
+    procs = []
+    queue = Queue()
+    queue.put(response)
+
+    filename = UPLOAD_FOLDER + file.filename
+    if whitespace == 'true':
+        response, filename = run_whitespace(filename, minimum_duration, response)
+    if subtitles == 'true':
+        print('subtitles is true')
+        proc = Process(target=add_subtitles, args=(filename, UPLOAD_FOLDER))
+        procs.append(proc)
+    if transcript == 'true':
+        proc = Process(target=run_transcript, args=(filename, response, queue))
+        procs.append(proc)
+    if slideshow == 'true':
+        proc = Process(target=run_slideshow, args=(filename, response, queue))
+        procs.append(proc)
+
+    for proc in procs:
+        proc.start()
+    
+    for proc in procs:
+        proc.join()
+
+    multiproc_response = queue.get()
+
+    response['slides'] = multiproc_response['slides']
+    response['textFromSlides'] = multiproc_response['textFromSlides']
+    response['transcript'] = multiproc_response['transcript']
+
+    print(response)
     return response
 
 
@@ -215,7 +265,7 @@ def upload_file(whitespace, minimum_duration, subtitles, transcript, slideshow, 
             filename = secure_filename(file_in.filename)
             file_in.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            response = process_file(file_in, whitespace, minimum_duration, slideshow, subtitles, transcript)
+            response = multiproc_file(file_in, whitespace, minimum_duration, slideshow, subtitles, transcript)
             email_links(response, send_email, email)
 
     print('response: \n', response)

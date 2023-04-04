@@ -16,7 +16,7 @@ import Statistics from "./components/Statistics";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#ff781f"
+      main: "#015b94"
     }
   }
 });

@@ -3,7 +3,7 @@ import { AiOutlineCloudUpload } from 'react-icons/ai';
 import CheckBoxes from "./CheckBoxes";
 
 export default function DragDrop() {
-  const height = 400;
+  const height = 300;
   const width = 500;
 
   const [dragActive, setDragActive] = React.useState(false);
