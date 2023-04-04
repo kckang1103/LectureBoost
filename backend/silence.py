@@ -6,7 +6,7 @@ from moviepy.editor import VideoFileClip, AudioFileClip, concatenate_videoclips,
 
 # Silence timestamps
 SILENCE_FILE = 'uploads/silence.txt'
-DETECTION_SCRIPT = 'find_silence.sh'
+DETECTION_SCRIPT = './find_silence.sh'
 # dbs to mark clip as silent 
 THRESH = '-20'
 # time between cuts
