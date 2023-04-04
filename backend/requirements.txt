@@ -43,3 +43,4 @@ urllib3==1.26.14
 websockets==10.4
 yagmail==0.15.293
 yarl==1.8.2
+Flask==2.0.3
