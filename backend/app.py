@@ -37,6 +37,7 @@ app.add_url_rule(
     '/uploads/<name>', endpoint='download_file', build_only=True
 )
 
+# Generate presigned url so it can be displayed in browser
 def make_signed_pdf_url(key):
     url = s3.generate_presigned_url(
     ClientMethod='get_object', 
@@ -45,10 +46,11 @@ def make_signed_pdf_url(key):
         'Key': key, 'ResponseContentDisposition': f'inline; filename={key}', 
         'ResponseContentType' : 'application/pdf'
         },
-    ExpiresIn=3600)
+    ExpiresIn=36000)
     return url
 
 
+# Generate presigned url so it can be displayed in browser
 def make_signed_txt_url(key):
     url = s3.generate_presigned_url(
     ClientMethod='get_object', 
@@ -57,10 +59,11 @@ def make_signed_txt_url(key):
         'Key': key, 'ResponseContentDisposition': f'inline; filename={key}', 
         'ResponseContentType' : 'text/plain'
         },
-    ExpiresIn=3600)
+    ExpiresIn=36000)
     return url
 
 
+# upload a pdf file to the s3 bucket
 def upload_pdf_to_s3(filename):
     resource = boto3.resource(
         's3',
@@ -71,6 +74,7 @@ def upload_pdf_to_s3(filename):
     return url
 
 
+# upload regular file object
 def upload_file_to_s3(file, filename):
     try:
         s3.upload_fileobj(
@@ -92,6 +96,7 @@ def upload_file_to_s3(file, filename):
     return url
 
 
+# run the silence removing script with specified minimum duration and file name
 def run_whitespace(file_name, minimum_duration, response):
     print('whitespace is true')
     file_name = cut_silence(file_name, float(minimum_duration))
@@ -106,6 +111,7 @@ def run_whitespace(file_name, minimum_duration, response):
     return response, file_name
 
 
+# run the transcript generating script
 def run_transcript(file_name, response, queue):
     print('transcript is true')
     transcribe(file_name, UPLOAD_FOLDER)
@@ -122,6 +128,7 @@ def run_transcript(file_name, response, queue):
     return response
 
 
+# run the slideshow generating script
 def run_slideshow(file_name, response, queue):
     print('slideshow is true')
     generate_slides(file_name, UPLOAD_FOLDER)
@@ -144,6 +151,7 @@ def run_slideshow(file_name, response, queue):
     return response
 
 
+# email links to the given email address
 def email_links(response, send_email, email):
     if send_email == 'true':
         links = []
@@ -154,6 +162,7 @@ def email_links(response, send_email, email):
         send_links(links, email)
 
 
+# run the chosen processes on the given video file
 def process_file(file, whitespace, minimum_duration, slideshow, subtitles, transcript):
     response = {
         'transcript': '',
@@ -179,7 +188,7 @@ def process_file(file, whitespace, minimum_duration, slideshow, subtitles, trans
     return response
 
 
-
+# run the chosen processes on the given video file concurrently
 def multiproc_file(file, whitespace, minimum_duration, slideshow, subtitles, transcript):
     response = {
         'transcript': '',
@@ -194,6 +203,7 @@ def multiproc_file(file, whitespace, minimum_duration, slideshow, subtitles, tra
 
     filename = UPLOAD_FOLDER + file.filename
     if whitespace == 'true':
+        # whitespace must always be run first if chosen
         response, filename = run_whitespace(filename, minimum_duration, response)
     if subtitles == 'true':
         print('subtitles is true')
@@ -218,26 +228,21 @@ def multiproc_file(file, whitespace, minimum_duration, slideshow, subtitles, tra
     response['textFromSlides'] = multiproc_response['textFromSlides']
     response['transcript'] = multiproc_response['transcript']
 
-    print(response)
     return response
 
-
+# check if file extension is in allowed format list
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# This function is fire
-@app.route('/uploads/shravan')
-def return_shravan():
-    return {'hello ': 'shravan',
-            'hi ': 'I am shravan'}
 
-
+# send file from uploads folder
 @app.route('/uploads/<name>')
 def download_file(name):
     return send_from_directory(app.config['UPLOAD_FOLDER'], name)
 
 
+# endpoint for processing files
 @app.route('/file/<whitespace>/<minimum_duration>/<subtitles>/<transcript>/<slideshow>/<send_email>/<email>', methods=['GET', 'POST'])
 def upload_file(whitespace, minimum_duration, subtitles, transcript, slideshow, send_email, email):
     response = {
@@ -265,7 +270,9 @@ def upload_file(whitespace, minimum_duration, subtitles, transcript, slideshow, 
             filename = secure_filename(file_in.filename)
             file_in.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
+            # process the file and generate an http response to send back with links
             response = multiproc_file(file_in, whitespace, minimum_duration, slideshow, subtitles, transcript)
+            # email links if selected
             email_links(response, send_email, email)
 
     print('response: \n', response)

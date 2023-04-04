@@ -4,7 +4,7 @@ from moviepy.video.tools.subtitles import SubtitlesClip
 from moviepy.editor import *
 
 # this might need to be changed depending on the os/computer
-# os.environ["IMAGEIO_FFMPEG_EXE"] = "/opt/homebrew/Cellar/ffmpeg/5.1.2_3/bin/ffmpeg"
+os.environ["IMAGEIO_FFMPEG_EXE"] = "/opt/homebrew/Cellar/ffmpeg/5.1.2_3/bin/ffmpeg"
 
 # file names
 
