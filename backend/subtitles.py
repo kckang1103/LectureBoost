@@ -2,17 +2,16 @@ import math
 import speech_recognition as sr
 from moviepy.video.tools.subtitles import SubtitlesClip
 from moviepy.editor import *
-import os
 
 # this might need to be changed depending on the os/computer
 os.environ["IMAGEIO_FFMPEG_EXE"] = "/opt/homebrew/Cellar/ffmpeg/5.1.2_3/bin/ffmpeg"
 
 # file names
 
-def add_subtitles(video_file):
+def add_subtitles(video_file, uploads_path):
 
     result_video_file = video_file
-    transcribed_audio_file = "uploads/transcribed_speech.wav"
+    transcribed_audio_file = uploads_path + "transcribed_speech.wav"
 
     # loading video file clip
     video_clip = VideoFileClip(video_file)

@@ -1,12 +1,14 @@
 import math
 import speech_recognition as sr
 from moviepy.editor import *
+import os
+from dotenv import load_dotenv
 
-def transcribe(video_file):
+def transcribe(video_file, uploads_path):
     # file names
     #video_file = "chenShort.mp4"
-    transcription_file = "./uploads/transcription.txt"
-    transcribed_audio_file = "./uploads/transcribed_speech.wav"
+    transcription_file = uploads_path + "transcription.txt"
+    transcribed_audio_file = uploads_path + "transcribed_speech.wav"
 
     # get the audio clip from the video
     audio_clip = AudioFileClip(video_file)
