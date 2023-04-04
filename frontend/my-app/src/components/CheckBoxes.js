@@ -55,7 +55,7 @@ export default function CheckBoxes(props) {
       if (email.localeCompare("") === 0) {
         emailToSend = "fake"
       }
-      const { data } = await axios.post(`http://127.0.0.1:8080/file/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}/${send_email}/${emailToSend}`, formData, {
+      const { data } = await axios.post(`http://localhost:8080/file/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}/${send_email}/${emailToSend}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         }
