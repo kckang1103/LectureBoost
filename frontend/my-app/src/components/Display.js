@@ -1,13 +1,14 @@
 import React from "react";
 import ReactPlayer from 'react-player';
 import { useLocation } from 'react-router-dom';
+import Logo from "./Logo";
 
 export default function Display(props) {
     const { state } = useLocation();
 
     return (
         <div>
-            <center><img src="https://lecture-boost.s3.us-east-2.amazonaws.com/Screenshot+2023-01-22+at+4.11.30+AM.png" alt="what image shows" height="100%" width="500" /></center>
+            <Logo />
             {!state.slides &&
                 <div className='player-wrapper'>
                     <ReactPlayer
@@ -33,12 +34,12 @@ export default function Display(props) {
                     </div>
 
                     <div class="grid-child green">
-                        <object width="100%" height="99%" data={state.slides_link} type="application/pdf" />
+                        <object width="100%" height="99%" data={state.slides_link} type="application/pdf">Slides</object>
                     </div>
                 </div>}
 
             <div>
-                <object data={state.transcript_link} width="100%" height="200" />
+                <object data={state.transcript_link} width="100%" height="200">Transcript</object>
             </div>
         </div>
     )

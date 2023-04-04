@@ -1,5 +1,5 @@
 .App {
-  font-family: sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, "system-ui", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   padding: 20px;
 }
 
@@ -17,8 +17,9 @@
 
 .VideoInput_video {
   position: fixed; /* or absolute */
-  top: 20%;
-  left: 33%;
+  /* margin-top: 200px; */
+  top: 29%;
+  /* left: 33%; */
   display: block;
   margin: 0;
 }
@@ -37,10 +38,11 @@
 #form-file-upload {
   /* height: 16rem;
   width: 28rem; */
+  margin-top: 100px;
   max-width: 100%;
   text-align: center;
   position: relative;
-  position: fixed; /* or absolute */
+  position: fixed;
   top: 20%;
   left: 35%;
   height: 40%;
@@ -50,9 +52,9 @@
   justify-content: center;
   border-width: 2px;
   border-radius: 1rem;
-  border-style: dashed;
-  border-color: #cbd5e1;
-  background-color: #f8fafc;
+  border-style: solid;
+  border-color: black;
+  background-color: transparent;
 }
 
 #input-file-upload {
@@ -60,7 +62,8 @@
 }
 
 #label-file-upload {
-  position: fixed; /* or absolute */
+  position: fixed;
+  margin-top: 100px;
   top: 20%;
   left: 35%;
   height: 40%;
@@ -70,13 +73,16 @@
   justify-content: center;
   border-width: 2px;
   border-radius: 1rem;
-  border-style: dashed;
-  border-color: #cbd5e1;
-  background-color: #f8fafc;
+  border-style: solid;
+  border-color: black;
+  /* background-color: transparent; */
+  background-color: rgba(255, 255, 255, .15);  
+  backdrop-filter: blur(5px);
 }
 
 #label-file-upload.drag-active {
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, .30);  
+  backdrop-filter: blur(5px);
 }
 
 .upload-button {
@@ -115,4 +121,75 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 20px;
+}
+
+/* Background animation */
+
+body {
+  margin: auto;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: auto;
+  background: linear-gradient(315deg, rgb(229, 215, 191) 3%, rgb(230, 231, 164) 38%, rgb(225, 207, 159) 68%, rgb(168, 91, 52) 98%);
+  background-size: 400% 400%;
+  background-attachment: fixed;
+}
+
+@keyframes gradient {
+  0% {
+      background-position: 0% 0%;
+  }
+  50% {
+      background-position: 100% 100%;
+  }
+  100% {
+      background-position: 0% 0%;
+  }
+}
+
+.wave {
+  background: rgb(255 255 255 / 25%);
+  border-radius: 1000% 1000% 0 0;
+  position: fixed;
+  width: 200%;
+  height: 12em;
+  animation: wave 10s -3s linear infinite;
+  transform: translate3d(0, 0, 0);
+  opacity: 0.8;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.wave:nth-of-type(2) {
+  bottom: -1.25em;
+  animation: wave 18s linear reverse infinite;
+  opacity: 0.8;
+}
+
+.wave:nth-of-type(3) {
+  bottom: -2.5em;
+  animation: wave 20s -1s reverse infinite;
+  opacity: 0.9;
+}
+
+@keyframes wave {
+  2% {
+      transform: translateX(1);
+  }
+
+  25% {
+      transform: translateX(-25%);
+  }
+
+  50% {
+      transform: translateX(-50%);
+  }
+
+  75% {
+      transform: translateX(-25%);
+  }
+
+  100% {
+      transform: translateX(1);
+  }
 }

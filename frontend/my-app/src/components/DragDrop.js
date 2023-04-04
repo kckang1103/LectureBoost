@@ -72,7 +72,7 @@ export default function DragDrop() {
       }
       {source && (
         <>
-          <CheckBoxes className="CheckBoxes" file={file}/>
+          <CheckBoxes className="CheckBoxes" file={file} />
           <video
             className="VideoInput_video"
             width={width}

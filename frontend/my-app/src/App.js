@@ -4,16 +4,44 @@ import {
   Route,
   Routes,
 } from "react-router-dom";
+import Grid from '@mui/material/Grid'; // Grid version 1
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+import "./index.css";
+import Logo from "./components/Logo";
 import DragDrop from "./components/DragDrop";
 import Display from "./components/Display"
-import "./index.css";
+import Statistics from "./components/Statistics";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#ff781f"
+    }
+  }
+});
 
 function Home() {
   return (
-    <div className="App">
-      <center><img src="https://lecture-boost.s3.us-east-2.amazonaws.com/Screenshot+2023-01-22+at+4.11.30+AM.png" alt="what image shows" height="100%" width="400" /></center>
-      <DragDrop />
-    </div>
+    <ThemeProvider theme={theme}>
+      <body>
+        <div className="wave"></div>
+        <div className="wave"></div>
+        <div className="wave"></div>
+      </body>
+      <div className="App">
+        <Grid
+          container
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Logo />
+          <Statistics />
+          <DragDrop />
+        </Grid>
+      </div>
+    </ThemeProvider>
   );
 };
 
