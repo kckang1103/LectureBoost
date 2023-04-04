@@ -196,5 +196,9 @@ body {
 
 h4 {
   position: relative; 
-	top: 300px;
+	top: 350px;
+}
+
+img.logo {
+  cursor: pointer; 
 }

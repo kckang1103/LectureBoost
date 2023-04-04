@@ -1,8 +1,6 @@
 import math
 import speech_recognition as sr
 from moviepy.editor import *
-import os
-from dotenv import load_dotenv
 
 def transcribe(video_file, uploads_path):
     # file names
