@@ -24,11 +24,9 @@ const theme = createTheme({
 function Home() {
   return (
     <ThemeProvider theme={theme}>
-      <body>
-        <div className="wave"></div>
-        <div className="wave"></div>
-        <div className="wave"></div>
-      </body>
+      <div className="wave"></div>
+      <div className="wave"></div>
+      <div className="wave"></div>
       <div className="App">
         <Grid
           container

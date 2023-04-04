@@ -46,7 +46,7 @@ export default function DragDrop() {
     console.log('handlechange')
     e.preventDefault();
     if (e.target.files && e.target.files[0]) {
-      handleFile(e);
+      handleFile(e.target.files);
     }
   };
 
