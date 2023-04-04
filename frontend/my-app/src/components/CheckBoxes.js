@@ -165,7 +165,7 @@ export default function CheckBoxes(props) {
       </>}
       {loading && <><Grid spacing={1} container>
         <Grid xs item>
-          <LinearProgress title="hey what's up" />
+          <LinearProgress title="hey what's up"/>
         </Grid>
       </Grid><h4 style={{ textAlign: "center" }}>Your lecture video is currently being processed.<br />If you have selected the email notification option, you will receive an email with the contents when the processing is complete.</h4></>}
       <Snackbar
