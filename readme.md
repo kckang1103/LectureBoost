@@ -2,7 +2,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/kckang1103/LectureBoost">
-    <img src="lectureboost.png" alt="Logo">
+    <img src="https://github.com/kckang1103/LectureBoost/blob/main/frontend/my-app/src/assets/logo.png" alt="Logo">
   </a>
 
 <h3 align="center">LectureBoost</h3>
