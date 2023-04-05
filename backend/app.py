@@ -16,8 +16,10 @@ from silence import cut_silence
 from emails import send_links
 from multiprocessing import Process, Queue
 
+# load environment variables
 load_dotenv()
 
+# connect to s3 bucket
 s3 = boto3.client(
     's3',
     aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
@@ -33,6 +35,7 @@ ALLOWED_EXTENSIONS = {'mp4'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 app.add_url_rule(
     '/uploads/<name>', endpoint='download_file', build_only=True
 )
@@ -236,6 +239,13 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+# route to test if backend is up and running
+@app.route('/uploads/test')
+def return_shravan():
+    return {'test ': 'I am running',
+            'test2 ': 'I am running'}
+
+
 # send file from uploads folder
 @app.route('/uploads/<name>')
 def download_file(name):
@@ -251,11 +261,9 @@ def upload_file(whitespace, minimum_duration, subtitles, transcript, slideshow, 
         'textFromSlides': '',
         'slides': ''
     }
-    
 
     if request.method == 'POST':
         # check if the post request has the file part
-
         if 'file' not in request.files:
             print('No file part')
             return redirect(request.url)
@@ -285,8 +293,7 @@ def upload_file(whitespace, minimum_duration, subtitles, transcript, slideshow, 
 
 if __name__ == '__main__':
     print('running')
-    app.secret_key = 'super secret key'
+    app.secret_key = os.getenv('APP_SECRET_KEY')
     app.config['SESSION_TYPE'] = 'filesystem'
     # app.run(debug=True, port=8001)
     app.run(threaded=True, host='0.0.0.0', port=8080)
-    print(os.environ.get('AWS_BUCKET_NAME'))

@@ -13,12 +13,13 @@ THRESH = '-20'
 EASE = 0.0
 MIN_CLIP_DURATION = 0.1
 
-
+# generate silence file using ffmpeg
 def generate_silence_file(file_name, minimum_duration):
     command = [DETECTION_SCRIPT, file_name, THRESH, str(minimum_duration)]
     subprocess.run(command)
 
 
+# cut the video file into subclips and stitch back together without silent sections
 def cut_silence(file_name, minimum_duration):
     # generate silence file
     generate_silence_file(file_name, minimum_duration)
@@ -36,6 +37,7 @@ def cut_silence(file_name, minimum_duration):
     with open(SILENCE_FILE, 'r', errors='replace') as f_in:
         # create clips using the end time and duration up silent sections
         for line in tqdm(f_in):
+            # check for error in line
             if 'x' in line: continue
 
             silence_end, silence_duration = line.strip().split()
@@ -65,7 +67,6 @@ def cut_silence(file_name, minimum_duration):
         video_clips.append(video.subclip(float(next_start)-EASE))
         audio_clips.append(audio.subclip(float(next_start)-EASE))
 
-
     processed_video = concatenate_videoclips(video_clips)
     processed_audio = concatenate_audioclips(audio_clips)
     combined = processed_video.set_audio(processed_audio)
@@ -78,5 +79,6 @@ def cut_silence(file_name, minimum_duration):
         threads=20
     )
     video.close()
+    audio.close()
 
     return file_name[:-4] + '_cut.mp4'

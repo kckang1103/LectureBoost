@@ -81,7 +81,6 @@ export default function CheckBoxes(props) {
       });
     } catch (err) {
       console.error(err);
-      //window.location.reload();
       // show error message when error is caught
       setOpen(true);
     }
