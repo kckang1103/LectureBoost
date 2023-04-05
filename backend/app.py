@@ -10,7 +10,6 @@ from werkzeug.utils import secure_filename
 from generateSlides import generate_slides
 from subtitles import add_subtitles
 from transcribe import transcribe
-# from transcribeDeepgram import transcribe
 from silence import cut_silence
 
 from emails import send_links
@@ -115,7 +114,7 @@ def run_whitespace(file_name, minimum_duration, response):
 
 
 # run the transcript generating script
-def run_transcript(file_name, response, queue):
+def run_transcript(file_name, queue):
     print('transcript is true')
     transcribe(file_name, UPLOAD_FOLDER)
     response = queue.get()
@@ -132,7 +131,7 @@ def run_transcript(file_name, response, queue):
 
 
 # run the slideshow generating script
-def run_slideshow(file_name, response, queue):
+def run_slideshow(file_name, queue):
     print('slideshow is true')
     generate_slides(file_name, UPLOAD_FOLDER)
     response = queue.get()
@@ -184,9 +183,9 @@ def process_file(file, whitespace, minimum_duration, slideshow, subtitles, trans
         print('subtitles is true')
         add_subtitles(filename, UPLOAD_FOLDER)
     if transcript == 'true':
-        response = run_transcript(filename, response, queue)
+        response = run_transcript(filename, queue)
     if slideshow == 'true':
-        response = run_slideshow(filename, response, queue)
+        response = run_slideshow(filename, queue)
 
     return response
 
@@ -213,10 +212,10 @@ def multiproc_file(file, whitespace, minimum_duration, slideshow, subtitles, tra
         proc = Process(target=add_subtitles, args=(filename, UPLOAD_FOLDER))
         procs.append(proc)
     if transcript == 'true':
-        proc = Process(target=run_transcript, args=(filename, response, queue))
+        proc = Process(target=run_transcript, args=(filename, queue))
         procs.append(proc)
     if slideshow == 'true':
-        proc = Process(target=run_slideshow, args=(filename, response, queue))
+        proc = Process(target=run_slideshow, args=(filename, queue))
         procs.append(proc)
 
     for proc in procs:
@@ -295,5 +294,4 @@ if __name__ == '__main__':
     print('running')
     app.secret_key = os.getenv('APP_SECRET_KEY')
     app.config['SESSION_TYPE'] = 'filesystem'
-    # app.run(debug=True, port=8001)
     app.run(threaded=True, host='0.0.0.0', port=8080)

@@ -67,6 +67,7 @@ export default function CheckBoxes(props) {
 
       setLoading(false);
 
+      // Switch to Display page and send all response links and variables
       navigate("/Display", {
         state: {
           whitespace: whitespace,
@@ -111,7 +112,7 @@ export default function CheckBoxes(props) {
               control={
                 <Checkbox checked={whitespace} onChange={handleChange} name="whitespace" />
               }
-              label="Remove Whitespaces"
+              label="Remove Silence"
             />
             {whitespace && <Slider
               defaultValue={0.3}

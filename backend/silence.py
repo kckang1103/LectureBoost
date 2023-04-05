@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import subprocess
 from tqdm import tqdm
 from moviepy.editor import VideoFileClip, AudioFileClip, concatenate_videoclips, concatenate_audioclips

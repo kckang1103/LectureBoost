@@ -37,10 +37,11 @@ export default function Display(props) {
                         <object width="100%" height="99%" data={state.slides_link} type="application/pdf">Slides</object>
                     </div>
                 </div>}
-
-            <div>
-                <object data={state.transcript_link} width="100%" height="200">Transcript</object>
-            </div>
+            {state.transcribe &&
+                <div>
+                    <object data={state.transcript_link} width="100%" height="200">Transcript</object>
+                </div>
+            }
         </div>
     )
 }
