@@ -55,7 +55,7 @@ export default function CheckBoxes(props) {
       if (email.localeCompare("") === 0) {
         emailToSend = "fake"
       }
-      const { data } = await axios.post(`http://localhost:8080/file/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}/${send_email}/${emailToSend}`, formData, {
+      const { data } = await axios.post(process.env.REACT_APP_BACKEND_ENDPOINT + `file/${whitespace}/${whitespace_val}/${subtitles}/${transcribe}/${slides}/${send_email}/${emailToSend}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         }
@@ -165,7 +165,7 @@ export default function CheckBoxes(props) {
       </>}
       {loading && <><Grid spacing={1} container>
         <Grid xs item>
-          <LinearProgress title="hey what's up"/>
+          <LinearProgress title="hey what's up" />
         </Grid>
       </Grid><h4 style={{ textAlign: "center" }}>Your lecture video is currently being processed.<br />If you have selected the email notification option, you will receive an email with the contents when the processing is complete.</h4></>}
       <Snackbar
