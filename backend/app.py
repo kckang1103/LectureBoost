@@ -103,7 +103,9 @@ def run_whitespace(file_name, minimum_duration, response):
     print('whitespace is true')
     file_name = cut_silence(file_name, float(minimum_duration))
     with open(file_name, 'rb') as f:
+        print("to s3")
         response_from_s3 = upload_file_to_s3(f, file_name)
+        print("past s3")
         response['video'] = response_from_s3
         if response_from_s3:
             print('success uploading to s3', response_from_s3)
@@ -179,10 +181,12 @@ def process_file(file, whitespace, minimum_duration, slideshow, subtitles, trans
     filename = UPLOAD_FOLDER + file.filename
     if whitespace == 'true':
         response, filename = run_whitespace(filename, minimum_duration, response)
+        print("after whitespace")
     if subtitles == 'true':
         print('subtitles is true')
         add_subtitles(filename, UPLOAD_FOLDER)
     if transcript == 'true':
+        print("transcript")
         response = run_transcript(filename, queue)
     if slideshow == 'true':
         response = run_slideshow(filename, queue)
@@ -282,7 +286,6 @@ def upload_file(whitespace, minimum_duration, subtitles, transcript, slideshow, 
             # email links if selected
             email_links(response, send_email, email)
 
-    print('response: \n', response)
     final_response = jsonify(response)
     final_response.headers.add('Access-Control-Allow-Origin', '*')
     print('final response: \n', final_response.headers)
