@@ -29,7 +29,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Lecture Boost is a web application used to enhance lectures in a variety of ways:
+The Lecture Boost project won second place in the Purdue BoilerMake 2023 hackathon competition after an initial review by contest organizers and a secondary review and vote by selected Purdue University professors. It was originally developed over a period of 36 hours by Kichul Kang (Github: kckang1103), Sam Tarr (Github: S-Tarr), and Thomas Wiegand (Github: twiegan). After the competition the code was developed further by Kichul Kang and Sam Tarr. Lecture Boost is a web application used to enhance lectures in a variety of ways:
 
 Removing Silence:
 - remove the silence in between when you lecturer starts and stops speaking
