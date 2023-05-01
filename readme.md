@@ -69,6 +69,16 @@ Subtitles:
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Gallery
+<img src="demo_screenshots/1.png" />
+<img src="demo_screenshots/2.png" />
+<img src="demo_screenshots/3.png" />
+<img src="demo_screenshots/4.png" />
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
