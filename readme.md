@@ -2,13 +2,11 @@
 <br />
 <div align="center">
   <a href="https://github.com/kckang1103/LectureBoost">
-    <img src="https://github.com/kckang1103/LectureBoost/blob/main/frontend/my-app/src/assets/logo.png" alt="Logo">
+    <img id=readme-top src="https://github.com/kckang1103/LectureBoost/blob/main/frontend/my-app/src/assets/logo.png" alt="Logo">
   </a>
 
 <h3 align="center">LectureBoost</h3>
 </div>
-
-
 
 <!-- TABLE OF CONTENTS -->
 <details>
