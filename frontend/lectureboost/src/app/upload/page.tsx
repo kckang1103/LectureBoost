@@ -4,6 +4,8 @@ import React, { useState, useCallback } from 'react';
 import { Gauge, Upload, X, FileVideo, AlertCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import Link from 'next/link'
+
 
 interface FileWithPreview extends File {
   preview?: string;
@@ -12,6 +14,7 @@ interface FileWithPreview extends File {
 const UploadPage = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<FileWithPreview | null>(null);
+  const [fileURL, setFileURL] = useState<string | null>(null);
   const [error, setError] = useState<string>('');
 
   const handleDrag = useCallback((e: React.DragEvent) => {
@@ -51,7 +54,9 @@ const UploadPage = () => {
 
     const droppedFile = e.dataTransfer.files[0];
     if (droppedFile && validateFile(droppedFile)) {
-      setFile(droppedFile);
+      const fileURL = URL.createObjectURL(droppedFile);
+      setFileURL(fileURL);
+      setFile(droppedFile)
     }
   }, []);
 
@@ -59,7 +64,9 @@ const UploadPage = () => {
     setError('');
     const selectedFile = e.target.files?.[0];
     if (selectedFile && validateFile(selectedFile)) {
-      setFile(selectedFile);
+      const fileURL = URL.createObjectURL(selectedFile);
+      setFileURL(fileURL);
+      setFile(selectedFile)
     }
   };
 
@@ -148,7 +155,7 @@ const UploadPage = () => {
           )}
 
           <div className="mt-6">
-            <button
+            {/* <button
               disabled={!file}
               className={`w-full py-3 rounded-lg transition-colors font-medium ${
                 file
@@ -157,7 +164,15 @@ const UploadPage = () => {
               }`}
             >
               Continue
-            </button>
+            </button> */}
+            <Link href={{
+              pathname: 'videoplayer',
+              query: {
+                file: fileURL,
+              },
+            }}>
+              Continue
+            </Link>
           </div>
         </Card>
 
