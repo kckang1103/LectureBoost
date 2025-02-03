@@ -165,12 +165,24 @@ const UploadPage = () => {
             >
               Continue
             </button> */}
-            <Link href={{
-              pathname: 'videoplayer',
-              query: {
-                file: fileURL,
-              },
-            }}>
+            <Link 
+              // aria-disabled={!!file} 
+              // tabIndex={!file ? -1 : undefined}
+              href={{
+                pathname: 'videoplayer',
+                query: {
+                  file: fileURL,
+                },
+              }} 
+              style={{
+                pointerEvents: !file ? 'none' : 'auto',
+              }}
+              className={`w-full px-8 py-3 rounded-lg transition-colors font-medium items-center ${
+                file
+                  ? 'bg-purple-600 text-white hover:bg-purple-700'
+                  : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+              }`}
+            >
               Continue
             </Link>
           </div>
