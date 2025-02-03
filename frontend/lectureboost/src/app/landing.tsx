@@ -3,8 +3,10 @@
 import React from 'react';
 import { Gauge, Upload, Clock, Sparkles, ArrowRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import Link from 'next/link'
 
 const LandingPage = () => {
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-indigo-50 to-purple-50">
       {/* Navigation */}
@@ -35,9 +37,9 @@ const LandingPage = () => {
               Transform lengthy lectures into engaging, accessible content with AI-powered processing.
               Save time and boost learning effectiveness.
             </p>
-            <button className="px-8 py-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-lg font-medium inline-flex items-center gap-2">
+            <Link href="/upload" passHref={true} className="px-8 py-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-lg font-medium inline-flex items-center gap-2">
               Start Processing <ArrowRight className="w-5 h-5" />
-            </button>
+            </Link>
           </div>
 
           {/* Features */}

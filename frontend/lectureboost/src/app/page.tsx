@@ -1,7 +1,12 @@
+'use client'
+
 import LandingPage from "./landing";
+import Link from 'next/link'
 
 export default function Home() {
   return (
-    <LandingPage />
+    <Link href="/">
+        <LandingPage />
+    </Link>
   );
 }

@@ -142,7 +142,7 @@ const LoadingPage = () => {
         </div>
 
         <div className="text-center mt-8 text-sm text-gray-500">
-          You'll be automatically redirected when processing is complete
+          You&apos;ll be automatically redirected when processing is complete
         </div>
       </div>
     </div>

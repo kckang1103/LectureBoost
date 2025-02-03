@@ -5,7 +5,7 @@ import { Gauge, Download, Printer, MoreVertical } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 const ResultsPage = () => {
-  const [activeSlide, setActiveSlide] = useState(1);
+  const [activeSlide] = useState(1);
   const totalSlides = 9;
 
   return (
@@ -64,11 +64,11 @@ const ResultsPage = () => {
               <div className="p-4 max-h-[300px] overflow-y-auto space-y-4 text-sm">
                 <div className="space-y-1">
                   <div className="text-gray-500">Time Stamp: 0:00:00-0:00:30</div>
-                  <p>Okay let's get started good morning okay I'll try that again good morning okay welcome to 161 on your instructor dr. Joseph chenta fixing to do here just go through some basic course policies and let you know what does structure of the course is and then we'll do a little bit of review of calculus to finish out the day building room 848</p>
+                  <p>Okay let&apos;s get started good morning okay I&apos;ll try that again good morning okay welcome to 161 on your instructor dr. Joseph chenta fixing to do here just go through some basic course policies and let you know what does structure of the course is and then we&apos;ll do a little bit of review of calculus to finish out the day building room 848</p>
                 </div>
                 <div className="space-y-1">
                   <div className="text-gray-500">Time Stamp: 0:00:30-0:01:00</div>
-                  <p>in the balcony 2L please find a seat in. I'll go back to hear my email change Aki purdue.edu my office hours are Tuesday Thursday 10:30 to 12:30 or if you need to see me but you can't make it to those hours send me an email I'll do my best to arrange a meeting with you have a quote page it's at math. Purdue.edu / ma161 reposting Gordon court documents and any updates and any announcement that always usually go in there and where to send out you know but now it's meant for you</p>
+                  <p>in the balcony 2L please find a seat in. I&apos;ll go back to hear my email change Aki purdue.edu my office hours are Tuesday Thursday 10:30 to 12:30 or if you need to see me but you can&apos;t make it to those hours send me an email I&apos;ll do my best to arrange a meeting with you have a quote page it&apos;s at math. Purdue.edu / ma161 reposting Gordon court documents and any updates and any announcement that always usually go in there and where to send out you know but now it&apos;s meant for you</p>
                 </div>
               </div>
             </Card>
