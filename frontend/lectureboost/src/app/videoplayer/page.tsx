@@ -3,6 +3,8 @@
 import React, { Suspense, useState } from 'react';
 import { Upload } from 'lucide-react';
 import { useSearchParams } from 'next/navigation'
+import axios from "axios"
+import Link from 'next/link'
 
 
 function VideoPlayer() {
@@ -10,10 +12,11 @@ function VideoPlayer() {
   const file = searchParams.get('file')
   
   const [settings, setSettings] = useState({
-    generateSummary: false,
-    createFlashcards: false,
-    highlightKeyPoints: false,
-    processingSpeed: 1
+    addSubtitles: false,
+    sendEmail: false,
+    email: '',
+    addSlideshow: false,
+    silentPeriod: 0.5
   });
 
   const handleCheckbox = (key: keyof typeof settings) => {
@@ -28,6 +31,54 @@ function VideoPlayer() {
       ...prev,
       processingSpeed: parseFloat(event.target.value)
     }));
+  };
+
+  async function submit() {
+    const formData = new FormData();
+    const fetchedFile = await fetch(file ?? '').then(res => res.blob())
+    formData.append("file", fetchedFile);
+    // setLoading(true);
+
+    try {
+      let emailToSend = settings.email;
+      console.log(settings.email)
+      if (settings.email.localeCompare("") === 0) {
+        emailToSend = "fake"
+      }
+      const { data } = await axios.post(process.env.NEXT_PUBLIC_BACKEND_URL
+        + `/file/${true}/${settings.silentPeriod}/${settings.addSubtitles}/${false}/${settings.addSlideshow}/${settings.sendEmail}/${emailToSend}`, 
+        formData, 
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          }
+        }
+      );
+
+      console.log(data.slides);
+      console.log(data.transcript);
+      console.log(data.video);
+
+      // setLoading(false);
+
+      // Switch to Display page and send all response links and variables
+      // navigate("/Display", {
+      //   state: {
+      //     whitespace: whitespace,
+      //     whitespace_val: whitespace_val,
+      //     transcribe: transcribe,
+      //     slides: slides,
+      //     subtitles: subtitles,
+      //     video_link: data.video,
+      //     slides_link: data.slides,
+      //     transcript_link: data.transcript,
+      //   }
+      // });
+    } catch (err) {
+      console.error(err);
+      // show error message when error is caught
+      // setOpen(true);
+    }
   };
 
   return (
@@ -59,48 +110,57 @@ function VideoPlayer() {
               <div className="flex items-center space-x-2">
                 <input 
                   type="checkbox" 
-                  checked={settings.generateSummary}
-                  onChange={() => handleCheckbox('generateSummary')}
+                  checked={settings.addSubtitles}
+                  onChange={() => handleCheckbox('addSubtitles')}
                   className="w-4 h-4 text-purple-600" 
                 />
-                <span>Generate Summary</span>
+                <span>Add Subtitles</span>
               </div>
               <div className="flex items-center space-x-2">
                 <input 
                   type="checkbox" 
-                  checked={settings.createFlashcards}
-                  onChange={() => handleCheckbox('createFlashcards')}
+                  checked={settings.sendEmail}
+                  onChange={() => handleCheckbox('sendEmail')}
                   className="w-4 h-4 text-purple-600" 
                 />
-                <span>Create Flashcards</span>
+                <span>Email Me</span>
               </div>
               <div className="flex items-center space-x-2">
                 <input 
                   type="checkbox" 
-                  checked={settings.highlightKeyPoints}
-                  onChange={() => handleCheckbox('highlightKeyPoints')}
+                  checked={settings.addSlideshow}
+                  onChange={() => handleCheckbox('addSlideshow')}
                   className="w-4 h-4 text-purple-600" 
                 />
-                <span>Highlight Key Points</span>
+                <span>Generate Slideshow</span>
               </div>
             </div>
 
             <div className="space-y-2">
-              <label>Processing Speed: {settings.processingSpeed}x</label>
+              <label>Minimum Silent Period : {settings.silentPeriod}x</label>
               <input 
                 type="range" 
-                min="0.5" 
-                max="2" 
+                min="0.1" 
+                max="3" 
                 step="0.1" 
-                value={settings.processingSpeed}
+                value={settings.silentPeriod}
                 onChange={handleSlider}
                 className="w-full"
               />
             </div>
 
-            <button className="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700">
+            {/* <button className="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700">
               Continue
-            </button>
+            </button> */}
+            <Link 
+              href={{
+                pathname: 'loading',
+              }} 
+              onClick={submit}
+              className={'w-full px-8 py-3 rounded-lg transition-colors font-medium items-center bg-purple-600 text-white hover:bg-purple-700$'}
+            >
+              Continue
+            </Link>
           </div>
         </div>
 

@@ -155,19 +155,7 @@ const UploadPage = () => {
           )}
 
           <div className="mt-6">
-            {/* <button
-              disabled={!file}
-              className={`w-full py-3 rounded-lg transition-colors font-medium ${
-                file
-                  ? 'bg-purple-600 text-white hover:bg-purple-700'
-                  : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              Continue
-            </button> */}
             <Link 
-              // aria-disabled={!!file} 
-              // tabIndex={!file ? -1 : undefined}
               href={{
                 pathname: 'videoplayer',
                 query: {
