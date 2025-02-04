@@ -16,7 +16,7 @@ function VideoPlayer() {
     sendEmail: false,
     email: '',
     addSlideshow: false,
-    silentPeriod: 0.5
+    silentPeriod: 0.0
   });
 
   const handleCheckbox = (key: keyof typeof settings) => {
@@ -29,7 +29,7 @@ function VideoPlayer() {
   const handleSlider = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSettings(prev => ({
       ...prev,
-      processingSpeed: parseFloat(event.target.value)
+      silentPeriod: parseFloat(event.target.value)
     }));
   };
 
@@ -119,28 +119,28 @@ function VideoPlayer() {
               <div className="flex items-center space-x-2">
                 <input 
                   type="checkbox" 
-                  checked={settings.sendEmail}
-                  onChange={() => handleCheckbox('sendEmail')}
-                  className="w-4 h-4 text-purple-600" 
-                />
-                <span>Email Me</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <input 
-                  type="checkbox" 
                   checked={settings.addSlideshow}
                   onChange={() => handleCheckbox('addSlideshow')}
                   className="w-4 h-4 text-purple-600" 
                 />
                 <span>Generate Slideshow</span>
               </div>
+              <div className="flex items-center space-x-2">
+                <input 
+                  type="checkbox" 
+                  checked={settings.sendEmail}
+                  onChange={() => handleCheckbox('sendEmail')}
+                  className="w-4 h-4 text-purple-600" 
+                />
+                <span>Email Me</span>
+              </div>
             </div>
 
             <div className="space-y-2">
-              <label>Minimum Silent Period : {settings.silentPeriod}x</label>
+              <label>Minimum Silent Period : {settings.silentPeriod} seconds</label>
               <input 
                 type="range" 
-                min="0.1" 
+                min="0.0" 
                 max="3" 
                 step="0.1" 
                 value={settings.silentPeriod}
@@ -157,7 +157,7 @@ function VideoPlayer() {
                 pathname: 'loading',
               }} 
               onClick={submit}
-              className={'w-full px-8 py-3 rounded-lg transition-colors font-medium items-center bg-purple-600 text-white hover:bg-purple-700$'}
+              className={'w-full px-6 py-2 rounded-lg transition-colors font-medium items-center bg-purple-600 text-white hover:bg-purple-700$'}
             >
               Continue
             </Link>
